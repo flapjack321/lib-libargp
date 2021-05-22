@@ -1,0 +1,10 @@
+menuconfig LIBARGP
+	bool "libargp is a portable library providing the command-line parsing functionality of the argp module of the GNU Portability Library (Gnulib)."
+	default n
+
+if LIBARGP
+config LIBARGP_MAIN_FUNCTION
+	bool "Provide main function"
+	default n
+
+endif
