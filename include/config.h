@@ -431,7 +431,7 @@
 #define HAVE_LIMITS_H 1
 
 /* Define to 1 if you have the <linewrap.h> header file. */
-/* #undef HAVE_LINEWRAP_H */
+#undef HAVE_LINEWRAP_H
 
 /* Define to 1 if the system has the type 'long long int'. */
 #define HAVE_LONG_LONG_INT 1
