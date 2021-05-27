@@ -1,0 +1,66 @@
+From d578e9e4d53266a84efb8e341a745c15c3adffca Mon Sep 17 00:00:00 2001
+From: Ethan Cotterell <ethancotterell@gmail.com>
+Date: Thu, 27 May 2021 10:48:50 +0100
+Subject: [PATCH 4/5] argp: remove unsupported libintl header
+
+---
+ gnulib/gllib/argp-help.c  | 16 ++++++++--------
+ gnulib/gllib/argp-parse.c | 14 +++++++-------
+ 2 files changed, 15 insertions(+), 15 deletions(-)
+
+diff --git a/gnulib/gllib/argp-help.c b/gnulib/gllib/argp-help.c
+index 07740bd..05a0c98 100644
+--- a/gnulib/gllib/argp-help.c
++++ b/gnulib/gllib/argp-help.c
+@@ -39,14 +39,14 @@
+ # include <wchar.h>
+ #endif
+ 
+-#ifdef _LIBC
+-# include <libintl.h>
+-# undef dgettext
+-# define dgettext(domain, msgid) \
+-   __dcgettext (domain, msgid, LC_MESSAGES)
+-#else
+-# include "gettext.h"
+-#endif
++// #ifdef _LIBC
++// # include <libintl.h>
++// # undef dgettext
++// # define dgettext(domain, msgid) \
++//    __dcgettext (domain, msgid, LC_MESSAGES)
++// #else
++#include "gettext.h"
++// #endif
+ 
+ #include "argp.h"
+ #include "argp-fmtstream.h"
+diff --git a/gnulib/gllib/argp-parse.c b/gnulib/gllib/argp-parse.c
+index 5fe651f..9645fe3 100644
+--- a/gnulib/gllib/argp-parse.c
++++ b/gnulib/gllib/argp-parse.c
+@@ -30,14 +30,14 @@
+ #include <getopt.h>
+ #include <getopt_int.h>
+ 
+-#ifdef _LIBC
+-# include <libintl.h>
+-# undef dgettext
+-# define dgettext(domain, msgid) \
+-   __dcgettext (domain, msgid, LC_MESSAGES)
+-#else
++// #ifdef _LIBC
++// # include <libintl.h>
++// # undef dgettext
++// # define dgettext(domain, msgid) \
++//    __dcgettext (domain, msgid, LC_MESSAGES)
++// #else
+ # include "gettext.h"
+-#endif
++// #endif
+ #define N_(msgid) msgid
+ 
+ #include "argp.h"
+-- 
+2.25.1
+
