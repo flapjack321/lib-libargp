@@ -1,0 +1,1259 @@
+From e0672b2b3b5ca0d0a7a25529eb2df5b6645eeef3 Mon Sep 17 00:00:00 2001
+From: Ethan Cotterell <ethancotterell@gmail.com>
+Date: Thu, 27 May 2021 10:43:11 +0100
+Subject: [PATCH 1/5] argp: run update-source script
+
+---
+ gnulib/gllib/argp-ba.c        |   8 +-
+ gnulib/gllib/argp-eexst.c     |   4 +-
+ gnulib/gllib/argp-fmtstream.c |  13 +-
+ gnulib/gllib/argp-fmtstream.h |  64 +-----
+ gnulib/gllib/argp-fs-xinl.c   |   4 +-
+ gnulib/gllib/argp-help.c      | 355 +++++++++++++++-------------------
+ gnulib/gllib/argp-namefrob.h  |   6 +-
+ gnulib/gllib/argp-parse.c     |  26 +--
+ gnulib/gllib/argp-pin.c       |  11 +-
+ gnulib/gllib/argp-pv.c        |   9 +-
+ gnulib/gllib/argp-pvh.c       |   5 +-
+ gnulib/gllib/argp-xinl.c      |   4 +-
+ gnulib/gllib/argp.h           |  41 ++--
+ 13 files changed, 220 insertions(+), 330 deletions(-)
+
+diff --git a/gnulib/gllib/argp-ba.c b/gnulib/gllib/argp-ba.c
+index 62d6f18..db6c0e9 100644
+--- a/gnulib/gllib/argp-ba.c
++++ b/gnulib/gllib/argp-ba.c
+@@ -1,5 +1,5 @@
+ /* Default definition for ARGP_PROGRAM_BUG_ADDRESS.
+-   Copyright (C) 1996-1997, 1999, 2009-2015 Free Software Foundation, Inc.
++   Copyright (C) 1996-2020 Free Software Foundation, Inc.
+    This file is part of the GNU C Library.
+    Written by Miles Bader <miles@gnu.ai.mit.edu>.
+ 
+@@ -14,7 +14,7 @@
+    GNU General Public License for more details.
+ 
+    You should have received a copy of the GNU General Public License
+-   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
++   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
+ 
+ /* If set by the user program, it should point to string that is the
+    bug-reporting address for the program.  It will be printed by argp_help if
+@@ -24,8 +24,8 @@
+ const char *argp_program_bug_address
+ /* This variable should be zero-initialized.  On most systems, putting it into
+    BSS is sufficient.  Not so on Mac OS X 10.3 and 10.4, see
+-   <http://lists.gnu.org/archive/html/bug-gnulib/2009-01/msg00329.html>
+-   <http://lists.gnu.org/archive/html/bug-gnulib/2009-08/msg00096.html>.  */
++   <https://lists.gnu.org/r/bug-gnulib/2009-01/msg00329.html>
++   <https://lists.gnu.org/r/bug-gnulib/2009-08/msg00096.html>.  */
+ #if defined __ELF__
+   /* On ELF systems, variables in BSS behave well.  */
+ #else
+diff --git a/gnulib/gllib/argp-eexst.c b/gnulib/gllib/argp-eexst.c
+index 5f5a6ee..45779e5 100644
+--- a/gnulib/gllib/argp-eexst.c
++++ b/gnulib/gllib/argp-eexst.c
+@@ -1,5 +1,5 @@
+ /* Default definition for ARGP_ERR_EXIT_STATUS
+-   Copyright (C) 1997, 2009-2015 Free Software Foundation, Inc.
++   Copyright (C) 1997, 2009-2020 Free Software Foundation, Inc.
+    This file is part of the GNU C Library.
+    Written by Miles Bader <miles@gnu.ai.mit.edu>.
+ 
+@@ -14,7 +14,7 @@
+    GNU General Public License for more details.
+ 
+    You should have received a copy of the GNU General Public License
+-   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
++   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
+ 
+ #ifdef HAVE_CONFIG_H
+ # include <config.h>
+diff --git a/gnulib/gllib/argp-fmtstream.c b/gnulib/gllib/argp-fmtstream.c
+index e411e49..870c21c 100644
+--- a/gnulib/gllib/argp-fmtstream.c
++++ b/gnulib/gllib/argp-fmtstream.c
+@@ -1,6 +1,5 @@
+ /* Word-wrapping and line-truncating streams
+-   Copyright (C) 1997-1999, 2001-2003, 2005, 2009-2015 Free Software
+-   Foundation, Inc.
++   Copyright (C) 1997-2020 Free Software Foundation, Inc.
+    This file is part of the GNU C Library.
+    Written by Miles Bader <miles@gnu.ai.mit.edu>.
+ 
+@@ -15,7 +14,7 @@
+    GNU General Public License for more details.
+ 
+    You should have received a copy of the GNU General Public License
+-   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
++   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
+ 
+ /* This package emulates glibc 'line_wrap_stream' semantics for systems that
+    don't have that.  */
+@@ -39,7 +38,7 @@
+ #define isblank(ch) ((ch)==' ' || (ch)=='\t')
+ #endif
+ 
+-#if defined _LIBC && defined USE_IN_LIBIO
++#ifdef _LIBC
+ # include <wchar.h>
+ # include <libio/libioP.h>
+ # define __vsnprintf(s, l, f, a) _IO_vsnprintf (s, l, f, a)
+@@ -100,7 +99,7 @@ __argp_fmtstream_free (argp_fmtstream_t fs)
+   __argp_fmtstream_update (fs);
+   if (fs->p > fs->buf)
+     {
+-#ifdef USE_IN_LIBIO
++#ifdef _LIBC
+       __fxprintf (fs->stream, "%.*s", (int) (fs->p - fs->buf), fs->buf);
+ #else
+       fwrite_unlocked (fs->buf, 1, fs->p - fs->buf, fs->stream);
+@@ -149,7 +148,7 @@ __argp_fmtstream_update (argp_fmtstream_t fs)
+               size_t i;
+               for (i = 0; i < pad; i++)
+                 {
+-#ifdef USE_IN_LIBIO
++#ifdef _LIBC
+                   if (_IO_fwide (fs->stream, 0) > 0)
+                     putwc_unlocked (L' ', fs->stream);
+                   else
+@@ -315,7 +314,7 @@ __argp_fmtstream_update (argp_fmtstream_t fs)
+               *nl++ = ' ';
+           else
+             for (i = 0; i < fs->wmargin; ++i)
+-#ifdef USE_IN_LIBIO
++#ifdef _LIBC
+               if (_IO_fwide (fs->stream, 0) > 0)
+                 putwc_unlocked (L' ', fs->stream);
+               else
+diff --git a/gnulib/gllib/argp-fmtstream.h b/gnulib/gllib/argp-fmtstream.h
+index 3e7fab6..e7713c4 100644
+--- a/gnulib/gllib/argp-fmtstream.h
++++ b/gnulib/gllib/argp-fmtstream.h
+@@ -1,5 +1,5 @@
+ /* Word-wrapping and line-truncating streams.
+-   Copyright (C) 1997, 2006-2015 Free Software Foundation, Inc.
++   Copyright (C) 1997-2020 Free Software Foundation, Inc.
+    This file is part of the GNU C Library.
+    Written by Miles Bader <miles@gnu.ai.mit.edu>.
+ 
+@@ -14,7 +14,7 @@
+    GNU General Public License for more details.
+ 
+    You should have received a copy of the GNU General Public License
+-   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
++   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
+ 
+ /* This package emulates glibc 'line_wrap_stream' semantics for systems that
+    don't have that.  If the system does have it, it is just a wrapper for
+@@ -40,8 +40,7 @@
+ # define _GL_ATTRIBUTE_FORMAT(spec) /* empty */
+ #endif
+ 
+-#if    (_LIBC - 0 && !defined (USE_IN_LIBIO)) \
+-    || (defined (__GNU_LIBRARY__) && defined (HAVE_LINEWRAP_H))
++#if defined (__GNU_LIBRARY__) && defined (HAVE_LINEWRAP_H)
+ /* line_wrap_stream is available, so use that.  */
+ #define ARGP_FMTSTREAM_USE_LINEWRAP
+ #endif
+@@ -87,6 +86,7 @@ typedef FILE *argp_fmtstream_t;
+ 
+ #else /* !ARGP_FMTSTREAM_USE_LINEWRAP */
+ /* Guess we have to define our own version.  */
++
+ 
+ struct argp_fmtstream
+ {
+@@ -207,63 +207,11 @@ _GL_INLINE_HEADER_BEGIN
+ #endif
+ 
+ #ifndef ARGP_FS_EI
+-# ifdef __GNUC__
+-   /* GCC 4.3 and above with -std=c99 or -std=gnu99 implements ISO C99
+-      inline semantics, unless -fgnu89-inline is used.  It defines a macro
+-      __GNUC_STDC_INLINE__ to indicate this situation or a macro
+-      __GNUC_GNU_INLINE__ to indicate the opposite situation.
+-
+-      GCC 4.2 with -std=c99 or -std=gnu99 implements the GNU C inline
+-      semantics but warns, unless -fgnu89-inline is used:
+-        warning: C99 inline functions are not supported; using GNU89
+-        warning: to disable this warning use -fgnu89-inline or the gnu_inline function attribute
+-      It defines a macro __GNUC_GNU_INLINE__ to indicate this situation.
+-
+-      Whereas Apple GCC 4.0.1 build 5479 without -std=c99 or -std=gnu99
+-      implements the GNU C inline semantics and defines the macro
+-      __GNUC_GNU_INLINE__, but it does not warn and does not support
+-      __attribute__ ((__gnu_inline__)).
+-
+-      All in all, these are the possible combinations.  For every compiler,
+-      we need to choose ARGP_FS_EI so that the corresponding table cell
+-      contains an "ok".
+-
+-        \    ARGP_FS_EI                      inline   extern    extern
+-          \                                           inline    inline
+-      CC    \                                                   __attribute__
+-                                                                ((gnu_inline))
+-
+-      gcc 4.3.0                              error    ok        ok
+-      gcc 4.3.0 -std=gnu99 -fgnu89-inline    error    ok        ok
+-      gcc 4.3.0 -std=gnu99                   ok       error     ok
+-
+-      gcc 4.2.2                              error    ok        ok
+-      gcc 4.2.2 -std=gnu99 -fgnu89-inline    error    ok        ok
+-      gcc 4.2.2 -std=gnu99                   error    warning   ok
+-
+-      gcc 4.1.2                              error    ok        warning
+-      gcc 4.1.2 -std=gnu99                   error    ok        warning
+-
+-      Apple gcc 4.0.1                        error    ok        warning
+-      Apple gcc 4.0.1 -std=gnu99             ok       error     warning
+-    */
+-#  if defined __GNUC_STDC_INLINE__
+-#   define ARGP_FS_EI inline
+-#  elif __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 2)
+-#   define ARGP_FS_EI extern inline __attribute__ ((__gnu_inline__))
+-#  else
+-#   define ARGP_FS_EI extern inline
+-#  endif
+-# else
+-   /* With other compilers, assume the ISO C99 meaning of 'inline', if
+-      the compiler supports 'inline' at all.  */
+-#  define ARGP_FS_EI inline
+-# endif
++#define ARGP_FS_EI extern inline
+ #endif
+ 
+ ARGP_FS_EI size_t
+-__argp_fmtstream_write (argp_fmtstream_t __fs,
+-                        const char *__str, size_t __len)
++__argp_fmtstream_write (argp_fmtstream_t __fs, const char *__str, size_t __len)
+ {
+   if (__fs->p + __len <= __fs->end || __argp_fmtstream_ensure (__fs, __len))
+     {
+diff --git a/gnulib/gllib/argp-fs-xinl.c b/gnulib/gllib/argp-fs-xinl.c
+index 9b02751..28f0022 100644
+--- a/gnulib/gllib/argp-fs-xinl.c
++++ b/gnulib/gllib/argp-fs-xinl.c
+@@ -1,5 +1,5 @@
+ /* Real definitions for extern inline functions in argp-fmtstream.h
+-   Copyright (C) 1997, 2003-2004, 2009-2015 Free Software Foundation, Inc.
++   Copyright (C) 1997-2020 Free Software Foundation, Inc.
+    This file is part of the GNU C Library.
+    Written by Miles Bader <miles@gnu.ai.mit.edu>.
+ 
+@@ -14,7 +14,7 @@
+    GNU General Public License for more details.
+ 
+    You should have received a copy of the GNU General Public License
+-   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
++   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
+ 
+ #ifdef HAVE_CONFIG_H
+ # include <config.h>
+diff --git a/gnulib/gllib/argp-help.c b/gnulib/gllib/argp-help.c
+index ebb53fc..02faa60 100644
+--- a/gnulib/gllib/argp-help.c
++++ b/gnulib/gllib/argp-help.c
+@@ -1,5 +1,5 @@
+ /* Hierarchical argument parsing help output
+-   Copyright (C) 1995-2005, 2007, 2009-2015 Free Software Foundation, Inc.
++   Copyright (C) 1995-2020 Free Software Foundation, Inc.
+    This file is part of the GNU C Library.
+    Written by Miles Bader <miles@gnu.ai.mit.edu>.
+ 
+@@ -14,7 +14,7 @@
+    GNU General Public License for more details.
+ 
+    You should have received a copy of the GNU General Public License
+-   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
++   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
+ 
+ #ifndef _GNU_SOURCE
+ # define _GNU_SOURCE    1
+@@ -26,15 +26,16 @@
+ 
+ #include <alloca.h>
+ #include <errno.h>
++#include <stdbool.h>
+ #include <stddef.h>
+ #include <stdlib.h>
+ #include <string.h>
+-#include <strings.h>
+ #include <assert.h>
+ #include <stdarg.h>
+ #include <ctype.h>
+ #include <limits.h>
+-#ifdef USE_IN_LIBIO
++#ifdef _LIBC
++# include <../libio/libioP.h>
+ # include <wchar.h>
+ #endif
+ 
+@@ -42,7 +43,7 @@
+ # include <libintl.h>
+ # undef dgettext
+ # define dgettext(domain, msgid) \
+-   INTUSE(__dcgettext) (domain, msgid, LC_MESSAGES)
++   __dcgettext (domain, msgid, LC_MESSAGES)
+ #else
+ # include "gettext.h"
+ #endif
+@@ -104,39 +105,38 @@ struct uparams
+ static struct uparams uparams = {
+   DUP_ARGS, DUP_ARGS_NOTE,
+   SHORT_OPT_COL, LONG_OPT_COL, DOC_OPT_COL, OPT_DOC_COL, HEADER_COL,
+-  USAGE_INDENT, RMARGIN,
+-  0
++  USAGE_INDENT, RMARGIN
+ };
+ 
+ /* A particular uparam, and what the user name is.  */
+ struct uparam_name
+ {
+-  const char *name;             /* User name.  */
+-  int is_bool;                  /* Whether it's 'boolean'.  */
+-  size_t uparams_offs;          /* Location of the (int) field in UPARAMS.  */
++  const char name[14];          /* User name.  */
++  bool is_bool;                 /* Whether it's 'boolean'.  */
++  unsigned char uparams_offs;   /* Location of the (int) field in UPARAMS.  */
+ };
+ 
+ /* The name-field mappings we know about.  */
+ static const struct uparam_name uparam_names[] =
+ {
+-  { "dup-args",       1, offsetof (struct uparams, dup_args) },
+-  { "dup-args-note",  1, offsetof (struct uparams, dup_args_note) },
+-  { "short-opt-col",  0, offsetof (struct uparams, short_opt_col) },
+-  { "long-opt-col",   0, offsetof (struct uparams, long_opt_col) },
+-  { "doc-opt-col",    0, offsetof (struct uparams, doc_opt_col) },
+-  { "opt-doc-col",    0, offsetof (struct uparams, opt_doc_col) },
+-  { "header-col",     0, offsetof (struct uparams, header_col) },
+-  { "usage-indent",   0, offsetof (struct uparams, usage_indent) },
+-  { "rmargin",        0, offsetof (struct uparams, rmargin) },
+-  { 0 }
++  { "dup-args",       true, offsetof (struct uparams, dup_args) },
++  { "dup-args-note",  true, offsetof (struct uparams, dup_args_note) },
++  { "short-opt-col",  false, offsetof (struct uparams, short_opt_col) },
++  { "long-opt-col",   false, offsetof (struct uparams, long_opt_col) },
++  { "doc-opt-col",    false, offsetof (struct uparams, doc_opt_col) },
++  { "opt-doc-col",    false, offsetof (struct uparams, opt_doc_col) },
++  { "header-col",     false, offsetof (struct uparams, header_col) },
++  { "usage-indent",   false, offsetof (struct uparams, usage_indent) },
++  { "rmargin",        false, offsetof (struct uparams, rmargin) }
+ };
++#define nuparam_names (sizeof (uparam_names) / sizeof (uparam_names[0]))
+ 
+ static void
+ validate_uparams (const struct argp_state *state, struct uparams *upptr)
+ {
+   const struct uparam_name *up;
+ 
+-  for (up = uparam_names; up->name; up++)
++  for (up = uparam_names; up < uparam_names + nuparam_names; up++)
+     {
+       if (up->is_bool
+           || up->uparams_offs == offsetof (struct uparams, rmargin))
+@@ -155,7 +155,7 @@ ARGP_HELP_FMT: %s value is less than or equal to %s"),
+   uparams.valid = 1;
+ }
+ 
+-/* Read user options from the environment, and fill in UPARAMS appropriately. */
++/* Read user options from the environment, and fill in UPARAMS appropriately.  */
+ static void
+ fill_in_uparams (const struct argp_state *state)
+ {
+@@ -211,29 +211,27 @@ fill_in_uparams (const struct argp_state *state)
+                   SKIPWS (arg);
+                 }
+ 
+-              for (un = uparam_names; un->name; un++)
++              for (un = uparam_names;
++                   un < uparam_names + nuparam_names;
++                   un++)
+                 if (strlen (un->name) == var_len
+                     && strncmp (var, un->name, var_len) == 0)
+                   {
+                     if (unspec && !un->is_bool)
+                       __argp_failure (state, 0, 0,
+-                                      dgettext (state->root_argp->argp_domain,
++                                      dgettext (state == NULL ? NULL
++                                                : state->root_argp->argp_domain,
+                                                 "\
+ %.*s: ARGP_HELP_FMT parameter requires a value"),
+                                       (int) var_len, var);
+-                    else if (val < 0)
+-                      __argp_failure (state, 0, 0,
+-                                      dgettext (state->root_argp->argp_domain,
+-                                                "\
+-%.*s: ARGP_HELP_FMT parameter must be positive"),
+-                                      (int) var_len, var);
+                     else
+                       *(int *)((char *)&new_params + un->uparams_offs) = val;
+                     break;
+                   }
+-              if (! un->name)
++              if (un == uparam_names + nuparam_names)
+                 __argp_failure (state, 0, 0,
+-                                dgettext (state->root_argp->argp_domain, "\
++                                dgettext (state == NULL ? NULL
++                                          : state->root_argp->argp_domain, "\
+ %.*s: Unknown ARGP_HELP_FMT parameter"),
+                                 (int) var_len, var);
+ 
+@@ -244,7 +242,8 @@ fill_in_uparams (const struct argp_state *state)
+           else if (*var)
+             {
+               __argp_failure (state, 0, 0,
+-                              dgettext (state->root_argp->argp_domain,
++                              dgettext (state == NULL ? NULL
++                                        : state->root_argp->argp_domain,
+                                         "Garbage in ARGP_HELP_FMT: %s"), var);
+               break;
+             }
+@@ -678,9 +677,7 @@ static int
+ hol_cluster_cmp (const struct hol_cluster *cl1, const struct hol_cluster *cl2)
+ {
+   /* If one cluster is deeper than the other, use its ancestor at the same
+-     level, so that finding the common ancestor is straightforward.
+-
+-     clN->depth > 0 means that clN->parent != NULL (see hol_add_cluster) */
++     level, so that finding the common ancestor is straightforward.  */
+   while (cl1->depth > cl2->depth)
+     cl1 = cl1->parent;
+   while (cl2->depth > cl1->depth)
+@@ -721,20 +718,14 @@ static int
+ canon_doc_option (const char **name)
+ {
+   int non_opt;
+-
+-  if (!*name)
+-    non_opt = 1;
+-  else
+-    {
+-      /* Skip initial whitespace.  */
+-      while (isspace ((unsigned char) **name))
+-        (*name)++;
+-      /* Decide whether this looks like an option (leading '-') or not.  */
+-      non_opt = (**name != '-');
+-      /* Skip until part of name used for sorting.  */
+-      while (**name && !isalnum ((unsigned char) **name))
+-        (*name)++;
+-    }
++  /* Skip initial whitespace.  */
++  while (isspace (**name))
++    (*name)++;
++  /* Decide whether this looks like an option (leading '-') or not.  */
++  non_opt = (**name != '-');
++  /* Skip until part of name used for sorting.  */
++  while (**name && !isalnum (**name))
++    (*name)++;
+   return non_opt;
+ }
+ 
+@@ -749,25 +740,23 @@ hol_entry_cmp (const struct hol_entry *entry1,
+   /* The group numbers by which the entries should be ordered; if either is
+      in a cluster, then this is just the group within the cluster.  */
+   int group1 = entry1->group, group2 = entry2->group;
+-  int rc;
+ 
+   if (entry1->cluster != entry2->cluster)
+     {
+       /* The entries are not within the same cluster, so we can't compare them
+          directly, we have to use the appropriate clustering level too.  */
+       if (! entry1->cluster)
+-        /* ENTRY1 is at the "base level", not in a cluster, so we have to
++        /* ENTRY1 is at the 'base level', not in a cluster, so we have to
+            compare it's group number with that of the base cluster in which
+            ENTRY2 resides.  Note that if they're in the same group, the
+-           clustered option always comes laster.  */
++           clustered option always comes last.  */
+         return group_cmp (group1, hol_cluster_base (entry2->cluster)->group, -1);
+       else if (! entry2->cluster)
+         /* Likewise, but ENTRY2's not in a cluster.  */
+         return group_cmp (hol_cluster_base (entry1->cluster)->group, group2, 1);
+       else
+         /* Both entries are in clusters, we can just compare the clusters.  */
+-        return (rc = hol_cluster_cmp (entry1->cluster, entry2->cluster)) ?
+-               rc : HOL_ENTRY_PTRCMP (entry1, entry2);
++        return hol_cluster_cmp (entry1->cluster, entry2->cluster);
+     }
+   else if (group1 == group2)
+     /* The entries are both in the same cluster and group, so compare them
+@@ -781,18 +770,17 @@ hol_entry_cmp (const struct hol_entry *entry1,
+       const char *long2 = hol_entry_first_long (entry2);
+ 
+       if (doc1)
+-        doc1 = canon_doc_option (&long1);
++        doc1 = long1 != NULL && canon_doc_option (&long1);
+       if (doc2)
+-        doc2 = canon_doc_option (&long2);
++        doc2 = long2 != NULL && canon_doc_option (&long2);
+ 
+       if (doc1 != doc2)
+-        /* "documentation" options always follow normal options (or
++        /* 'documentation' options always follow normal options (or
+            documentation options that *look* like normal options).  */
+         return doc1 - doc2;
+       else if (!short1 && !short2 && long1 && long2)
+         /* Only long options.  */
+-        return (rc = __strcasecmp (long1, long2)) ?
+-               rc : HOL_ENTRY_PTRCMP (entry1, entry2);
++        return __strcasecmp (long1, long2);
+       else
+         /* Compare short/short, long/short, short/long, using the first
+            character of long options.  Entries without *any* valid
+@@ -800,22 +788,22 @@ hol_entry_cmp (const struct hol_entry *entry1,
+            first, but as they're not displayed, it doesn't matter where
+            they are.  */
+         {
+-          unsigned char first1 = short1 ? short1 : long1 ? *long1 : 0;
+-          unsigned char first2 = short2 ? short2 : long2 ? *long2 : 0;
+-          /* Use tolower, not _tolower, since only the former is
+-             guaranteed to work on something already lower case.  */
++          char first1 = short1 ? short1 : long1 ? *long1 : 0;
++          char first2 = short2 ? short2 : long2 ? *long2 : 0;
++#ifdef _tolower
++          int lower_cmp = _tolower (first1) - _tolower (first2);
++#else
+           int lower_cmp = tolower (first1) - tolower (first2);
++#endif
+           /* Compare ignoring case, except when the options are both the
+              same letter, in which case lower-case always comes first.  */
+-          return lower_cmp ? lower_cmp :
+-                 (rc = first2 - first1) ?
+-                 rc : HOL_ENTRY_PTRCMP (entry1, entry2);
++          return lower_cmp ? lower_cmp : first2 - first1;
+         }
+     }
+   else
+     /* Within the same cluster, but not the same group, so just compare
+        groups.  */
+-    return group_cmp (group1, group2, HOL_ENTRY_PTRCMP (entry1, entry2));
++    return group_cmp (group1, group2, 0);
+ }
+ 
+ /* Version of hol_entry_cmp with correct signature for qsort.  */
+@@ -892,8 +880,8 @@ hol_append (struct hol *hol, struct hol *more)
+ 
+           /* Fix up the short options pointers from HOL.  */
+           for (e = entries, left = hol->num_entries; left > 0; e++, left--)
+-            e->short_options =
+-              short_options + (e->short_options - hol->short_options);
++            e->short_options
++              = short_options + (e->short_options - hol->short_options);
+ 
+           /* Now add the short options from MORE, fixing up its entries
+              too.  */
+@@ -1013,7 +1001,7 @@ static const char *
+ filter_doc (const char *doc, int key, const struct argp *argp,
+             const struct argp_state *state)
+ {
+-  if (argp->help_filter)
++  if (argp && argp->help_filter)
+     /* We must apply a user filter to this output.  */
+     {
+       void *input = __argp_input (argp, state);
+@@ -1033,7 +1021,7 @@ static void
+ print_header (const char *str, const struct argp *argp,
+               struct pentry_state *pest)
+ {
+-  const char *tstr = dgettext (argp->argp_domain, str);
++  const char *tstr = str ? dgettext (argp->argp_domain, str) : NULL;
+   const char *fstr = filter_doc (tstr, ARGP_KEY_HELP_HEADER, argp, pest->state);
+ 
+   if (fstr)
+@@ -1109,13 +1097,7 @@ hol_entry_help (struct hol_entry *entry, const struct argp_state *state,
+   int old_wm = __argp_fmtstream_wmargin (stream);
+   /* PEST is a state block holding some of our variables that we'd like to
+      share with helper functions.  */
+-  struct pentry_state pest;
+-
+-  pest.entry = entry;
+-  pest.stream = stream;
+-  pest.hhstate = hhstate;
+-  pest.first = 1;
+-  pest.state = state;
++  struct pentry_state pest = { entry, stream, hhstate, 1, state };
+ 
+   if (! odoc (real))
+     for (opt = real, num = entry->num; num > 0; opt++, num--)
+@@ -1137,7 +1119,9 @@ hol_entry_help (struct hol_entry *entry, const struct argp_state *state,
+             __argp_fmtstream_putc (stream, '-');
+             __argp_fmtstream_putc (stream, *so);
+             if (!have_long_opt || uparams.dup_args)
+-              arg (real, " %s", "[%s]", state->root_argp->argp_domain, stream);
++              arg (real, " %s", "[%s]",
++                   state == NULL ? NULL : state->root_argp->argp_domain,
++                   stream);
+             else if (real->arg)
+               hhstate->suppressed_dup_arg = 1;
+           }
+@@ -1150,35 +1134,29 @@ hol_entry_help (struct hol_entry *entry, const struct argp_state *state,
+     {
+       __argp_fmtstream_set_wmargin (stream, uparams.doc_opt_col);
+       for (opt = real, num = entry->num; num > 0; opt++, num--)
+-        if (opt->name && *opt->name && ovisible (opt))
++        if (opt->name && ovisible (opt))
+           {
+             comma (uparams.doc_opt_col, &pest);
+             /* Calling dgettext here isn't quite right, since sorting will
+                have been done on the original; but documentation options
+                should be pretty rare anyway...  */
+             __argp_fmtstream_puts (stream,
+-                                   onotrans (opt) ?
+-                                             opt->name :
+-                                   dgettext (state->root_argp->argp_domain,
++                                   dgettext (state == NULL ? NULL
++                                             : state->root_argp->argp_domain,
+                                              opt->name));
+           }
+     }
+   else
+     /* A real long option.  */
+     {
+-      int first_long_opt = 1;
+-
+       __argp_fmtstream_set_wmargin (stream, uparams.long_opt_col);
+       for (opt = real, num = entry->num; num > 0; opt++, num--)
+         if (opt->name && ovisible (opt))
+           {
+             comma (uparams.long_opt_col, &pest);
+             __argp_fmtstream_printf (stream, "--%s", opt->name);
+-            if (first_long_opt || uparams.dup_args)
+-              arg (real, "=%s", "[=%s]", state->root_argp->argp_domain,
+-                   stream);
+-            else if (real->arg)
+-              hhstate->suppressed_dup_arg = 1;
++            arg (real, "=%s", "[=%s]",
++                 state == NULL ? NULL : state->root_argp->argp_domain, stream);
+           }
+     }
+ 
+@@ -1197,7 +1175,8 @@ hol_entry_help (struct hol_entry *entry, const struct argp_state *state,
+     }
+   else
+     {
+-      const char *tstr = real->doc ? dgettext (state->root_argp->argp_domain,
++      const char *tstr = real->doc ? dgettext (state == NULL ? NULL
++                                               : state->root_argp->argp_domain,
+                                                real->doc) : 0;
+       const char *fstr = filter_doc (tstr, real->key, entry->argp, state);
+       if (fstr && *fstr)
+@@ -1245,7 +1224,8 @@ hol_help (struct hol *hol, const struct argp_state *state,
+ 
+   if (hhstate.suppressed_dup_arg && uparams.dup_args_note)
+     {
+-      const char *tstr = dgettext (state->root_argp->argp_domain, "\
++      const char *tstr = dgettext (state == NULL ? NULL
++                                   : state->root_argp->argp_domain, "\
+ Mandatory or optional arguments to long options are also mandatory or \
+ optional for any corresponding short options.");
+       const char *fstr = filter_doc (tstr, ARGP_KEY_HELP_DUP_ARGS_NOTE,
+@@ -1323,7 +1303,7 @@ usage_long_opt (const struct argp_option *opt,
+   if (! arg)
+     arg = real->arg;
+ 
+-  if (! (flags & OPTION_NO_USAGE) && !odoc (opt))
++  if (! (flags & OPTION_NO_USAGE))
+     {
+       if (arg)
+         {
+@@ -1432,15 +1412,17 @@ argp_args_usage (const struct argp *argp, const struct argp_state *state,
+   char *our_level = *levels;
+   int multiple = 0;
+   const struct argp_child *child = argp->children;
+-  const char *tdoc = dgettext (argp->argp_domain, argp->args_doc), *nl = 0;
++  const char *tdoc =
++    argp->args_doc ? dgettext (argp->argp_domain, argp->args_doc) : NULL;
+   const char *fdoc = filter_doc (tdoc, ARGP_KEY_HELP_ARGS_DOC, argp, state);
++  const char *nl = NULL;
+ 
+   if (fdoc)
+     {
+       const char *cp = fdoc;
+       nl = __strchrnul (cp, '\n');
+       if (*nl != '\0')
+-        /* This is a "multi-level" args doc; advance to the correct position
++        /* This is a 'multi-level' args doc; advance to the correct position
+            as determined by our state in LEVELS, and update LEVELS.  */
+         {
+           int i;
+@@ -1494,55 +1476,46 @@ argp_doc (const struct argp *argp, const struct argp_state *state,
+ {
+   const char *text;
+   const char *inp_text;
+-  size_t inp_text_len = 0;
+-  const char *trans_text;
+   void *input = 0;
+   int anything = 0;
++  size_t inp_text_limit = 0;
++  const char *doc = argp->doc ? dgettext (argp->argp_domain, argp->doc) : NULL;
+   const struct argp_child *child = argp->children;
+ 
+-  if (argp->doc)
++  if (doc)
+     {
+-      char *vt = strchr (argp->doc, '\v');
+-      if (vt)
+-        {
+-          if (post)
+-            {
+-              inp_text = vt + 1;
+-              if (! *inp_text)
+-                inp_text = 0;
+-            }
+-          else
+-            {
+-              inp_text_len = vt - argp->doc;
+-              inp_text = inp_text_len ? __strndup (argp->doc, inp_text_len) : 0;
+-            }
+-        }
+-      else
+-        inp_text = post ? 0 : argp->doc;
+-      trans_text = inp_text ? dgettext (argp->argp_domain, inp_text) : NULL;
++      char *vt = strchr (doc, '\v');
++      inp_text = post ? (vt ? vt + 1 : 0) : doc;
++      inp_text_limit = (!post && vt) ? (vt - doc) : 0;
+     }
+   else
+-    trans_text = inp_text = 0;
++    inp_text = 0;
+ 
+   if (argp->help_filter)
+     /* We have to filter the doc strings.  */
+     {
++      if (inp_text_limit)
++        /* Copy INP_TEXT so that it's nul-terminated.  */
++        inp_text = __strndup (inp_text, inp_text_limit);
+       input = __argp_input (argp, state);
+       text =
+         (*argp->help_filter) (post
+                               ? ARGP_KEY_HELP_POST_DOC
+                               : ARGP_KEY_HELP_PRE_DOC,
+-                              trans_text, input);
++                              inp_text, input);
+     }
+   else
+-    text = (const char *) trans_text;
++    text = (const char *) inp_text;
+ 
+   if (text)
+     {
+       if (pre_blank)
+         __argp_fmtstream_putc (stream, '\n');
+ 
+-      __argp_fmtstream_puts (stream, text);
++      if (text == inp_text && inp_text_limit)
++        __argp_fmtstream_write (stream, inp_text, inp_text_limit);
++      else
++        __argp_fmtstream_puts (stream, text);
+ 
+       if (__argp_fmtstream_point (stream) > __argp_fmtstream_lmargin (stream))
+         __argp_fmtstream_putc (stream, '\n');
+@@ -1550,14 +1523,13 @@ argp_doc (const struct argp *argp, const struct argp_state *state,
+       anything = 1;
+     }
+ 
+-  if (text && text != trans_text)
++  if (text && text != inp_text)
+     free ((char *) text);       /* Free TEXT returned from the help filter.  */
+-
+-  if (inp_text && inp_text_len)
++  if (inp_text && inp_text_limit && argp->help_filter)
+     free ((char *) inp_text);   /* We copied INP_TEXT, so free it now.  */
+ 
+   if (post && argp->help_filter)
+-    /* Now see if we have to output an ARGP_KEY_HELP_EXTRA text.  */
++    /* Now see if we have to output a ARGP_KEY_HELP_EXTRA text.  */
+     {
+       text = (*argp->help_filter) (ARGP_KEY_HELP_EXTRA, 0, input);
+       if (text)
+@@ -1585,7 +1557,7 @@ argp_doc (const struct argp *argp, const struct argp_state *state,
+ 
+ /* Output a usage message for ARGP to STREAM.  If called from
+    argp_state_help, STATE is the relevant parsing state.  FLAGS are from the
+-   set ARGP_HELP_*.  NAME is what to use wherever a "program name" is
++   set ARGP_HELP_*.  NAME is what to use wherever a 'program name' is
+    needed. */
+ static void
+ _help (const struct argp *argp, const struct argp_state *state, FILE *stream,
+@@ -1729,14 +1701,11 @@ Try '%s --help' or '%s --usage' for more information.\n"),
+ }
+ 
+ /* Output a usage message for ARGP to STREAM.  FLAGS are from the set
+-   ARGP_HELP_*.  NAME is what to use wherever a "program name" is needed. */
++   ARGP_HELP_*.  NAME is what to use wherever a 'program name' is needed. */
+ void __argp_help (const struct argp *argp, FILE *stream,
+                   unsigned flags, char *name)
+ {
+-  struct argp_state state;
+-  memset (&state, 0, sizeof state);
+-  state.root_argp = argp;
+-  _help (argp, &state, stream, flags, name);
++  _help (argp, 0, stream, flags, name);
+ }
+ #ifdef weak_alias
+ weak_alias (__argp_help, argp_help)
+@@ -1747,7 +1716,8 @@ char *
+ __argp_short_program_name (void)
+ {
+ # if HAVE_DECL_PROGRAM_INVOCATION_NAME
+-  return __argp_base_name (program_invocation_name);
++  char *name = strrchr (program_invocation_name, '/');
++  return name ? name + 1 : program_invocation_name;
+ # else
+   /* FIXME: What now? Miles suggests that it is better to use NULL,
+      but currently the value is passed on directly to fputs_unlocked,
+@@ -1806,33 +1776,26 @@ __argp_error (const struct argp_state *state, const char *fmt, ...)
+ 
+           va_start (ap, fmt);
+ 
+-#ifdef USE_IN_LIBIO
+-          if (_IO_fwide (stream, 0) > 0)
+-            {
+-              char *buf;
++#ifdef _LIBC
++          char *buf;
+ 
+-              if (__asprintf (&buf, fmt, ap) < 0)
+-                buf = NULL;
++          if (_IO_vasprintf (&buf, fmt, ap) < 0)
++            buf = NULL;
+ 
+-              __fwprintf (stream, L"%s: %s\n",
+-                          state ? state->name : __argp_short_program_name (),
+-                          buf);
++          __fxprintf (stream, "%s: %s\n",
++                      state ? state->name : __argp_short_program_name (), buf);
+ 
+-              free (buf);
+-            }
+-          else
+-#endif
+-            {
+-              fputs_unlocked (state
+-                              ? state->name : __argp_short_program_name (),
+-                              stream);
+-              putc_unlocked (':', stream);
+-              putc_unlocked (' ', stream);
++          free (buf);
++#else
++          fputs_unlocked (state ? state->name : __argp_short_program_name (),
++                          stream);
++          putc_unlocked (':', stream);
++          putc_unlocked (' ', stream);
+ 
+-              vfprintf (stream, fmt, ap);
++          vfprintf (stream, fmt, ap);
+ 
+-              putc_unlocked ('\n', stream);
+-            }
++          putc_unlocked ('\n', stream);
++#endif
+ 
+           __argp_state_help (state, stream, ARGP_HELP_STD_ERR);
+ 
+@@ -1870,41 +1833,34 @@ __argp_failure (const struct argp_state *state, int status, int errnum,
+           __flockfile (stream);
+ #endif
+ 
+-#ifdef USE_IN_LIBIO
+-          if (_IO_fwide (stream, 0) > 0)
+-            __fwprintf (stream, L"%s",
+-                        state ? state->name : __argp_short_program_name ());
+-          else
++#ifdef _LIBC
++          __fxprintf (stream, "%s",
++                      state ? state->name : __argp_short_program_name ());
++#else
++          fputs_unlocked (state ? state->name : __argp_short_program_name (),
++                          stream);
+ #endif
+-            fputs_unlocked (state
+-                            ? state->name : __argp_short_program_name (),
+-                            stream);
+ 
+           if (fmt)
+             {
+               va_list ap;
+ 
+               va_start (ap, fmt);
+-#ifdef USE_IN_LIBIO
+-              if (_IO_fwide (stream, 0) > 0)
+-                {
+-                  char *buf;
++#ifdef _LIBC
++              char *buf;
+ 
+-                  if (__asprintf (&buf, fmt, ap) < 0)
+-                    buf = NULL;
++              if (_IO_vasprintf (&buf, fmt, ap) < 0)
++                buf = NULL;
+ 
+-                  __fwprintf (stream, L": %s", buf);
++              __fxprintf (stream, ": %s", buf);
+ 
+-                  free (buf);
+-                }
+-              else
+-#endif
+-                {
+-                  putc_unlocked (':', stream);
+-                  putc_unlocked (' ', stream);
++              free (buf);
++#else
++              putc_unlocked (':', stream);
++              putc_unlocked (' ', stream);
+ 
+-                  vfprintf (stream, fmt, ap);
+-                }
++              vfprintf (stream, fmt, ap);
++#endif
+ 
+               va_end (ap);
+             }
+@@ -1913,32 +1869,29 @@ __argp_failure (const struct argp_state *state, int status, int errnum,
+             {
+               char buf[200];
+ 
+-#ifdef USE_IN_LIBIO
+-              if (_IO_fwide (stream, 0) > 0)
+-                __fwprintf (stream, L": %s",
+-                            __strerror_r (errnum, buf, sizeof (buf)));
+-              else
+-#endif
+-                {
+-                  char const *s = NULL;
+-                  putc_unlocked (':', stream);
+-                  putc_unlocked (' ', stream);
+-#if _LIBC || (HAVE_DECL_STRERROR_R && STRERROR_R_CHAR_P && !defined strerror_r)
+-                  s = __strerror_r (errnum, buf, sizeof buf);
+-#elif HAVE_DECL_STRERROR_R
+-                  if (__strerror_r (errnum, buf, sizeof buf) == 0)
+-                    s = buf;
+-#endif
+-#if !_LIBC
+-                  if (! s && ! (s = strerror (errnum)))
+-                    s = dgettext (state->root_argp->argp_domain,
+-                                  "Unknown system error");
++#ifdef _LIBC
++              __fxprintf (stream, ": %s",
++                          __strerror_r (errnum, buf, sizeof (buf)));
++#else
++              char const *s = NULL;
++              putc_unlocked (':', stream);
++              putc_unlocked (' ', stream);
++# if GNULIB_STRERROR_R_POSIX || HAVE_DECL_STRERROR_R
++#  if !GNULIB_STRERROR_R_POSIX && STRERROR_R_CHAR_P
++              s = __strerror_r (errnum, buf, sizeof buf);
++#  else
++              if (__strerror_r (errnum, buf, sizeof buf) == 0)
++                s = buf;
++#  endif
++# endif
++              if (! s && ! (s = strerror (errnum)))
++                s = dgettext (state->root_argp->argp_domain,
++                              "Unknown system error");
++              fputs_unlocked (s, stream);
+ #endif
+-                  fputs (s, stream);
+-                }
+             }
+ 
+-#ifdef USE_IN_LIBIO
++#if _LIBC
+           if (_IO_fwide (stream, 0) > 0)
+             putwc_unlocked (L'\n', stream);
+           else
+diff --git a/gnulib/gllib/argp-namefrob.h b/gnulib/gllib/argp-namefrob.h
+index 479b74e..022b880 100644
+--- a/gnulib/gllib/argp-namefrob.h
++++ b/gnulib/gllib/argp-namefrob.h
+@@ -1,5 +1,5 @@
+ /* Name frobnication for compiling argp outside of glibc
+-   Copyright (C) 1997, 2003, 2007, 2009-2015 Free Software Foundation, Inc.
++   Copyright (C) 1997-2020 Free Software Foundation, Inc.
+    This file is part of the GNU C Library.
+    Written by Miles Bader <miles@gnu.ai.mit.edu>.
+ 
+@@ -14,7 +14,7 @@
+    GNU General Public License for more details.
+ 
+    You should have received a copy of the GNU General Public License
+-   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
++   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
+ 
+ #if !_LIBC
+ /* This code is written for inclusion in gnu-libc, and uses names in the
+@@ -138,7 +138,7 @@
+ #endif /* !_LIBC */
+ 
+ #ifndef __set_errno
+-# define __set_errno(e) (errno = (e))
++#define __set_errno(e) (errno = (e))
+ #endif
+ 
+ #if defined GNULIB_ARGP_DISABLE_DIRNAME
+diff --git a/gnulib/gllib/argp-parse.c b/gnulib/gllib/argp-parse.c
+index ad784b8..5fe651f 100644
+--- a/gnulib/gllib/argp-parse.c
++++ b/gnulib/gllib/argp-parse.c
+@@ -1,5 +1,5 @@
+ /* Hierarchical argument parsing, layered over getopt
+-   Copyright (C) 1995-2000, 2002-2004, 2009-2015 Free Software Foundation, Inc.
++   Copyright (C) 1995-2020 Free Software Foundation, Inc.
+    This file is part of the GNU C Library.
+    Written by Miles Bader <miles@gnu.ai.mit.edu>.
+ 
+@@ -14,7 +14,7 @@
+    GNU General Public License for more details.
+ 
+    You should have received a copy of the GNU General Public License
+-   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
++   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
+ 
+ #ifdef HAVE_CONFIG_H
+ # include <config.h>
+@@ -34,7 +34,7 @@
+ # include <libintl.h>
+ # undef dgettext
+ # define dgettext(domain, msgid) \
+-   INTUSE(__dcgettext) (domain, msgid, LC_MESSAGES)
++   __dcgettext (domain, msgid, LC_MESSAGES)
+ #else
+ # include "gettext.h"
+ #endif
+@@ -80,9 +80,10 @@ static const struct argp_option argp_default_options[] =
+ {
+   {"help",        '?',          0, 0,  N_("give this help list"), -1},
+   {"usage",       OPT_USAGE,    0, 0,  N_("give a short usage message"), 0},
+-  {"program-name",OPT_PROGNAME,N_("NAME"), OPTION_HIDDEN, N_("set the program name"), 0},
++  {"program-name",OPT_PROGNAME, N_("NAME"), OPTION_HIDDEN,
++   N_("set the program name"), 0},
+   {"HANG",        OPT_HANG,    N_("SECS"), OPTION_ARG_OPTIONAL | OPTION_HIDDEN,
+-     N_("hang for SECS seconds (default 3600)"), 0},
++   N_("hang for SECS seconds (default 3600)"), 0},
+   {NULL, 0, 0, 0, NULL, 0}
+ };
+ 
+@@ -739,12 +740,15 @@ parser_parse_opt (struct parser *parser, int opt, char *val)
+             }
+     }
+   else
+-    /* A long option.  We use shifts instead of masking for extracting
+-       the user value in order to preserve the sign.  */
+-    err =
+-      group_parse (&parser->groups[group_key - 1], &parser->state,
+-                   (opt << GROUP_BITS) >> GROUP_BITS,
+-                   parser->opt_data.optarg);
++    /* A long option.  Preserve the sign in the user key, without
++       invoking undefined behavior.  Assume two's complement.  */
++    {
++      int user_key =
++        ((opt & (1 << (USER_BITS - 1))) ? ~USER_MASK : 0) | (opt & USER_MASK);
++      err =
++        group_parse (&parser->groups[group_key - 1], &parser->state,
++                     user_key, parser->opt_data.optarg);
++    }
+ 
+   if (err == EBADKEY)
+     /* At least currently, an option not recognized is an error in the
+diff --git a/gnulib/gllib/argp-pin.c b/gnulib/gllib/argp-pin.c
+index 6198796..9932a8b 100644
+--- a/gnulib/gllib/argp-pin.c
++++ b/gnulib/gllib/argp-pin.c
+@@ -1,5 +1,5 @@
+ /* Full and short program names for argp module
+-   Copyright (C) 2005, 2009-2015 Free Software Foundation, Inc.
++   Copyright (C) 2005, 2009-2020 Free Software Foundation, Inc.
+ 
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+@@ -12,7 +12,7 @@
+    GNU General Public License for more details.
+ 
+    You should have received a copy of the GNU General Public License
+-   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
++   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
+ 
+ #ifdef HAVE_CONFIG_H
+ # include <config.h>
+@@ -24,3 +24,10 @@ char *program_invocation_short_name = 0;
+ #ifndef HAVE_PROGRAM_INVOCATION_NAME
+ char *program_invocation_name = 0;
+ #endif
++
++#if (defined HAVE_PROGRAM_INVOCATION_SHORT_NAME \
++     && defined HAVE_PROGRAM_INVOCATION_NAME)
++/* This declaration is solely to ensure that after preprocessing
++   this file is never empty.  */
++typedef int dummy;
++#endif
+diff --git a/gnulib/gllib/argp-pv.c b/gnulib/gllib/argp-pv.c
+index 0098d1b..a6d118f 100644
+--- a/gnulib/gllib/argp-pv.c
++++ b/gnulib/gllib/argp-pv.c
+@@ -1,6 +1,5 @@
+ /* Default definition for ARGP_PROGRAM_VERSION.
+-   Copyright (C) 1996-1997, 1999, 2006, 2009-2015 Free Software Foundation,
+-   Inc.
++   Copyright (C) 1996-2020 Free Software Foundation, Inc.
+    This file is part of the GNU C Library.
+    Written by Miles Bader <miles@gnu.ai.mit.edu>.
+ 
+@@ -15,7 +14,7 @@
+    GNU General Public License for more details.
+ 
+    You should have received a copy of the GNU General Public License
+-   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
++   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
+ 
+ /* If set by the user program to a non-zero value, then a default option
+    --version is added (unless the ARGP_NO_HELP flag is used), which will
+@@ -24,8 +23,8 @@
+ const char *argp_program_version
+ /* This variable should be zero-initialized.  On most systems, putting it into
+    BSS is sufficient.  Not so on Mac OS X 10.3 and 10.4, see
+-   <http://lists.gnu.org/archive/html/bug-gnulib/2009-01/msg00329.html>
+-   <http://lists.gnu.org/archive/html/bug-gnulib/2009-08/msg00096.html>.  */
++   <https://lists.gnu.org/r/bug-gnulib/2009-01/msg00329.html>
++   <https://lists.gnu.org/r/bug-gnulib/2009-08/msg00096.html>.  */
+ #if defined __ELF__
+   /* On ELF systems, variables in BSS behave well.  */
+ #else
+diff --git a/gnulib/gllib/argp-pvh.c b/gnulib/gllib/argp-pvh.c
+index 8c25f45..b3d88e4 100644
+--- a/gnulib/gllib/argp-pvh.c
++++ b/gnulib/gllib/argp-pvh.c
+@@ -1,6 +1,5 @@
+ /* Default definition for ARGP_PROGRAM_VERSION_HOOK.
+-   Copyright (C) 1996-1997, 1999, 2004, 2009-2015 Free Software Foundation,
+-   Inc.
++   Copyright (C) 1996-2020 Free Software Foundation, Inc.
+    This file is part of the GNU C Library.
+    Written by Miles Bader <miles@gnu.ai.mit.edu>.
+ 
+@@ -15,7 +14,7 @@
+    GNU General Public License for more details.
+ 
+    You should have received a copy of the GNU General Public License
+-   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
++   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
+ 
+ #ifdef HAVE_CONFIG_H
+ # include <config.h>
+diff --git a/gnulib/gllib/argp-xinl.c b/gnulib/gllib/argp-xinl.c
+index cb48ad6..a3d3855 100644
+--- a/gnulib/gllib/argp-xinl.c
++++ b/gnulib/gllib/argp-xinl.c
+@@ -1,5 +1,5 @@
+ /* Real definitions for extern inline functions in argp.h
+-   Copyright (C) 1997-1998, 2004, 2009-2015 Free Software Foundation, Inc.
++   Copyright (C) 1997-2020 Free Software Foundation, Inc.
+    This file is part of the GNU C Library.
+    Written by Miles Bader <miles@gnu.ai.mit.edu>.
+ 
+@@ -14,7 +14,7 @@
+    GNU General Public License for more details.
+ 
+    You should have received a copy of the GNU General Public License
+-   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
++   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
+ 
+ #ifdef HAVE_CONFIG_H
+ # include <config.h>
+diff --git a/gnulib/gllib/argp.h b/gnulib/gllib/argp.h
+index 0fdc82c..4cc6563 100644
+--- a/gnulib/gllib/argp.h
++++ b/gnulib/gllib/argp.h
+@@ -1,5 +1,5 @@
+ /* Hierarchical argument parsing, layered over getopt.
+-   Copyright (C) 1995-1999, 2003-2015 Free Software Foundation, Inc.
++   Copyright (C) 1995-2020 Free Software Foundation, Inc.
+    This file is part of the GNU C Library.
+    Written by Miles Bader <miles@gnu.ai.mit.edu>.
+ 
+@@ -14,7 +14,7 @@
+    GNU General Public License for more details.
+ 
+    You should have received a copy of the GNU General Public License
+-   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
++   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
+ 
+ #ifndef _ARGP_H
+ #define _ARGP_H
+@@ -69,6 +69,9 @@ typedef int error_t;
+ extern "C" {
+ #endif
+ 
++/* Glibc documentation:
++   https://www.gnu.org/software/libc/manual/html_node/Argp.html */
++
+ /* A description of a particular option.  A pointer to an array of
+    these is passed in the OPTIONS field of an argp structure.  Each option
+    entry can correspond to one long option and/or one short option; more
+@@ -146,15 +149,14 @@ struct argp_option
+ /* Valid only in conjunction with OPTION_DOC. This option disables translation
+    of option name. */
+ #define OPTION_NO_TRANS         0x20
+-
+ 
+ struct argp;                    /* fwd declare this type */
+ struct argp_state;              /* " */
+ struct argp_child;              /* " */
+ 
+ /* The type of a pointer to an argp parsing function.  */
+-typedef error_t (*argp_parser_t) (int key, char *arg,
+-                                  struct argp_state *state);
++typedef error_t (*argp_parser_t) (int __key, char *__arg,
++                                  struct argp_state *__state);
+ 
+ /* What to return for unrecognized keys.  For special ARGP_KEY_ keys, such
+    returns will simply be ignored.  For user keys, this error will be turned
+@@ -237,9 +239,9 @@ struct argp
+      ARGP_KEY_ definitions below.  */
+   argp_parser_t parser;
+ 
+-  /* A string describing what other arguments are wanted by this program.  It
+-     is only used by argp_usage to print the "Usage:" message.  If it
+-     contains newlines, the strings separated by them are considered
++  /* If non-NULL, a string describing what other arguments are wanted by this
++     program.  It is only used by argp_usage to print the "Usage:" message.
++     If it contains newlines, the strings separated by them are considered
+      alternative usage patterns, and printed on separate lines (lines after
+      the first are prefix by "  or: " instead of "Usage:").  */
+   const char *args_doc;
+@@ -589,28 +591,7 @@ _GL_INLINE_HEADER_BEGIN
+ # endif
+ 
+ # ifndef ARGP_EI
+-#  ifdef __GNUC__
+-    /* GCC 4.3 and above with -std=c99 or -std=gnu99 implements ISO C99
+-       inline semantics, unless -fgnu89-inline is used.  It defines a macro
+-       __GNUC_STDC_INLINE__ to indicate this situation or a macro
+-       __GNUC_GNU_INLINE__ to indicate the opposite situation.
+-       GCC 4.2 with -std=c99 or -std=gnu99 implements the GNU C inline
+-       semantics but warns, unless -fgnu89-inline is used:
+-         warning: C99 inline functions are not supported; using GNU89
+-         warning: to disable this warning use -fgnu89-inline or the gnu_inline function attribute
+-       It defines a macro __GNUC_GNU_INLINE__ to indicate this situation.  */
+-#   if defined __GNUC_STDC_INLINE__
+-#    define ARGP_EI __inline__
+-#   elif defined __GNUC_GNU_INLINE__
+-#    define ARGP_EI extern __inline__ __attribute__ ((__gnu_inline__))
+-#   else
+-#    define ARGP_EI extern __inline__
+-#   endif
+-#  else
+-    /* With other compilers, assume the ISO C99 meaning of 'inline', if
+-       the compiler supports 'inline' at all.  */
+-#   define ARGP_EI inline
+-#  endif
++#  define ARGP_EI __extern_inline
+ # endif
+ 
+ ARGP_EI void
+-- 
+2.25.1
+
