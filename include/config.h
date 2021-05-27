@@ -1283,3 +1283,7 @@
 
 /* Define to an unsigned 32-bit type if <sys/types.h> lacks this type. */
 /* #undef useconds_t */
+
+
+#define ENABLE_NLS 0
+#define _LIBC 1
