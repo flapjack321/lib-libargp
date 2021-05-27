@@ -40,7 +40,7 @@ $(eval $(call addlib_s,libargp,$(CONFIG_LIBARGP)))
 # Sources
 ################################################################################]
 LIBARGP_VERSION = 73fa3a226fa1a82ac9d8af20cb4dbb7a2f9cdbe7
-LIBARGP_URL = https://github.com/alexreg/libar$VERSION.zip
+LIBARGP_URL = https://github.com/alexreg/libargp/archive/$(LIBARGP_VERSION).zip
 LIBARGP_SUBDIR = libargp-$(LIBARGP_VERSION)
 LIBARGP_PATCHDIR = $(LIBARGP_BASE)/patches
 $(eval $(call patch,libargp,$(LIBARGP_PATCHDIR),$(LIBARGP_SUBDIR)))
@@ -49,7 +49,8 @@ $(eval $(call fetch,libargp,$(LIBARGP_URL)))
 ################################################################################
 # Helpers
 ################################################################################
-LIBARGP_SRC = $(LIBARGP_ORIGIN)/$(LIBARGP_SUBDIR)
+LIBARGP_EXTRACTED = $(LIBARGP_ORIGIN)/libargp-$(LIBARGP_VERSION)
+LIBARGP_SRC = $(LIBARGP_ORIGIN)/$(LIBARGP_SUBDIR)/gnulib/gllib
 
 ################################################################################
 # Library includes
@@ -59,10 +60,11 @@ CINCLUDES-y += -I$(LIBARGP_BASE)/include
 ################################################################################
 # Flags
 ################################################################################
-LIBARGP_FLAGS =
+LIBARGP_FLAGS = -DHAVE_CONFIG_H -D _LIBC
+
 
 # Suppress some warnings to make the build process look neater
-LIBARGP_FLAGS_SUPPRESS =
+LIBARGP_FLAGS_SUPPRESS = -Wunused-parameter
 
 LIBARGP_CFLAGS-y += $(LIBARGP_FLAGS)
 LIBARGP_CFLAGS-y += $(LIBARGP_FLAGS_SUPPRESS)
@@ -78,4 +80,13 @@ LIBARGPSRCS-$(CONFIG_LIBARGP_MAIN_FUNCTION) += $(LIBARGP_BASE)/main.c|unikraft
 ################################################################################
 # Library sources
 ################################################################################
-# LIBARGP_SRCS-y += # Include source files here
+LIBARGP_SRCS-y += $(LIBARGP_SRC)/argp-ba.c
+LIBARGP_SRCS-y += $(LIBARGP_SRC)/argp-eexst.c
+LIBARGP_SRCS-y += $(LIBARGP_SRC)/argp-fmtstream.c
+LIBARGP_SRCS-y += $(LIBARGP_SRC)/argp-fs-xinl.c
+LIBARGP_SRCS-y += $(LIBARGP_SRC)/argp-help.c
+LIBARGP_SRCS-y += $(LIBARGP_SRC)/argp-parse.c
+LIBARGP_SRCS-y += $(LIBARGP_SRC)/argp-pin.c
+LIBARGP_SRCS-y += $(LIBARGP_SRC)/argp-pv.c
+LIBARGP_SRCS-y += $(LIBARGP_SRC)/argp-pvh.c
+LIBARGP_SRCS-y += $(LIBARGP_SRC)/argp-xinl.c
