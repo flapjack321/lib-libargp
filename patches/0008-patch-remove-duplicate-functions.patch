@@ -1,0 +1,80 @@
+From 8293d87e1071ba7d3b5c452c45c0659d9a07be84 Mon Sep 17 00:00:00 2001
+From: Ethan Cotterell <ethancotterell@gmail.com>
+Date: Thu, 3 Jun 2021 09:40:11 +0100
+Subject: [PATCH 8/8] patch: remove duplicate functions
+
+---
+ gnulib/gllib/getopt1.c | 36 +++++++++++++++++++-----------------
+ 1 file changed, 19 insertions(+), 17 deletions(-)
+
+diff --git a/gnulib/gllib/getopt1.c b/gnulib/gllib/getopt1.c
+index 0e398e0..d001601 100644
+--- a/gnulib/gllib/getopt1.c
++++ b/gnulib/gllib/getopt1.c
+@@ -16,7 +16,8 @@
+    You should have received a copy of the GNU Lesser General Public
+    License along with the GNU C Library; if not, see
+    <https://www.gnu.org/licenses/>.  */
+-
++
++
+ #ifndef _LIBC
+ # include <config.h>
+ #endif
+@@ -24,13 +25,13 @@
+ #include "getopt.h"
+ #include "getopt_int.h"
+ 
+-int
+-getopt_long (int argc, char *__getopt_argv_const *argv, const char *options,
+-	     const struct option *long_options, int *opt_index)
+-{
+-  return _getopt_internal (argc, (char **) argv, options, long_options,
+-			   opt_index, 0, 0);
+-}
++// int
++// getopt_long (int argc, char *__getopt_argv_const *argv, const char *options,
++// 	     const struct option *long_options, int *opt_index)
++// {
++//   return _getopt_internal (argc, (char **) argv, options, long_options,
++// 			   opt_index, 0, 0);
++// }
+ 
+ int
+ _getopt_long_r (int argc, char **argv, const char *options,
+@@ -46,14 +47,14 @@ _getopt_long_r (int argc, char **argv, const char *options,
+    but does match a short option, it is parsed as a short option
+    instead.  */
+ 
+-int
+-getopt_long_only (int argc, char *__getopt_argv_const *argv,
+-		  const char *options,
+-		  const struct option *long_options, int *opt_index)
+-{
+-  return _getopt_internal (argc, (char **) argv, options, long_options,
+-			   opt_index, 1, 0);
+-}
++// int
++// getopt_long_only (int argc, char *__getopt_argv_const *argv,
++// 		  const char *options,
++// 		  const struct option *long_options, int *opt_index)
++// {
++//   return _getopt_internal (argc, (char **) argv, options, long_options,
++// 			   opt_index, 1, 0);
++// }
+ 
+ int
+ _getopt_long_only_r (int argc, char **argv, const char *options,
+@@ -64,7 +65,8 @@ _getopt_long_only_r (int argc, char **argv, const char *options,
+ 			     1, d, 0);
+ }
+ 
+-
++
++
+ #ifdef TEST
+ 
+ #include <stdio.h>
+-- 
+2.25.1
+

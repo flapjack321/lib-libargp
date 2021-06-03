@@ -1,0 +1,164 @@
+From 8fa25ca1070f82c90479a0e679ab20914156f9f8 Mon Sep 17 00:00:00 2001
+From: Ethan Cotterell <ethancotterell@gmail.com>
+Date: Thu, 3 Jun 2021 09:40:00 +0100
+Subject: [PATCH 7/8] patch: remove getopt dependency on _LIBC functions
+
+---
+ gnulib/gllib/getopt.c | 56 +++++++++++++++++++++++--------------------
+ 1 file changed, 30 insertions(+), 26 deletions(-)
+
+diff --git a/gnulib/gllib/getopt.c b/gnulib/gllib/getopt.c
+index 3b9776d..0a018f9 100644
+--- a/gnulib/gllib/getopt.c
++++ b/gnulib/gllib/getopt.c
+@@ -16,10 +16,11 @@
+    You should have received a copy of the GNU Lesser General Public
+    License along with the GNU C Library; if not, see
+    <https://www.gnu.org/licenses/>.  */
+-
+-#ifndef _LIBC
++
++
++// #ifndef _LIBC
+ # include <config.h>
+-#endif
++// #endif
+ 
+ #include "getopt.h"
+ 
+@@ -28,7 +29,7 @@
+ #include <string.h>
+ #include <unistd.h>
+ 
+-#ifdef _LIBC
++// #ifdef _LIBC
+ /* When used as part of glibc, error printing must be done differently
+    for standards compliance.  getopt is not a cancellation point, so
+    it must not call functions that are, and it is specified by an
+@@ -36,11 +37,11 @@
+    functions in the "user namespace" related to stdio locking.
+    Finally, it must use glibc's internal message translation so that
+    the messages are looked up in the proper text domain.  */
+-# include <libintl.h>
+-# define fprintf __fxprintf_nocancel
+-# define flockfile(fp) _IO_flockfile (fp)
+-# define funlockfile(fp) _IO_funlockfile (fp)
+-#else
++// # include <libintl.h>
++// # define fprintf __fxprintf_nocancel
++// # define flockfile(fp) _IO_flockfile (fp)
++// # define funlockfile(fp) _IO_funlockfile (fp)
++// #else
+ # include "gettext.h"
+ # define _(msgid) gettext (msgid)
+ /* When used standalone, flockfile and funlockfile might not be
+@@ -54,7 +55,7 @@
+ # define __libc_use_alloca(size) 0
+ # undef alloca
+ # define alloca(size) (abort (), (void *)0)
+-#endif
++// #endif
+ 
+ /* This implementation of 'getopt' has three modes for handling
+    options interspersed with non-option arguments.  It can stop
+@@ -86,7 +87,7 @@
+    Also, when 'ordering' is RETURN_IN_ORDER,
+    each non-option ARGV-element is returned here.  */
+ 
+-char *optarg;
++// char *optarg;
+ 
+ /* Index in ARGV of the next element to be scanned.
+    This is used for communication to and from the caller
+@@ -101,23 +102,24 @@ char *optarg;
+    how much of ARGV has been scanned so far.  */
+ 
+ /* 1003.2 says this must be 1 before any call.  */
+-int optind = 1;
++// int optind = 1;
+ 
+ /* Callers store zero here to inhibit the error message
+    for unrecognized options.  */
+ 
+-int opterr = 1;
++// int opterr = 1;
+ 
+ /* Set to an option character which was unrecognized.
+    This must be initialized on some systems to avoid linking in the
+    system's own getopt implementation.  */
+ 
+-int optopt = '?';
++// int optopt = '?';
+ 
+ /* Keep a global copy of all internal members of getopt_data.  */
+ 
+ static struct _getopt_data getopt_data;
+-
++
++
+ /* Exchange two adjacent subsequences of ARGV.
+    One subsequence is elements [first_nonopt,last_nonopt)
+    which contains all the non-options that have been skipped so far.
+@@ -279,7 +281,7 @@ process_long_option (int argc, char **argv, const char *optstring,
+ 			 argv[0], prefix, d->__nextchar);
+ 	      else
+ 		{
+-		  flockfile (stderr);
++		  // flockfile (stderr);
+ 		  fprintf (stderr,
+ 			   _("%s: option '%s%s' is ambiguous; possibilities:"),
+ 			   argv[0], prefix, d->__nextchar);
+@@ -293,7 +295,7 @@ process_long_option (int argc, char **argv, const char *optstring,
+ 		     printing a single character, so that it goes through
+ 		     __fxprintf_nocancel when compiled as part of glibc.  */
+ 		  fprintf (stderr, "\n");
+-		  funlockfile (stderr);
++		  // funlockfile (stderr);
+ 		}
+ 	    }
+ 	  if (ambig_malloced)
+@@ -360,7 +362,7 @@ process_long_option (int argc, char **argv, const char *optstring,
+ 		     _("%s: option '%s%s' requires an argument\n"),
+ 		     argv[0], prefix, pfound->name);
+ 
+-	  d->optopt = pfound->val;
++	  // d->optopt = pfound->val;
+ 	  return optstring[0] == ':' ? ':' : '?';
+ 	}
+     }
+@@ -410,7 +412,8 @@ _getopt_initialize (int argc _GL_UNUSED,
+   d->__initialized = 1;
+   return optstring;
+ }
+-
++
++
+ /* Scan elements of ARGV (whose length is ARGC) for option characters
+    given in OPTSTRING.
+ 
+@@ -732,14 +735,15 @@ _getopt_internal (int argc, char **argv, const char *optstring,
+ 			     0, 0, 0, POSIXLY_CORRECT);		\
+   }
+ 
+-#ifdef _LIBC
+-GETOPT_ENTRY(getopt, 0)
+-GETOPT_ENTRY(__posix_getopt, 1)
+-#else
+-GETOPT_ENTRY(getopt, 1)
+-#endif
++// #ifdef _LIBC
++// GETOPT_ENTRY(getopt, 0)
++// GETOPT_ENTRY(__posix_getopt, 1)
++// #else
++// GETOPT_ENTRY(getopt, 1)
++// #endif
++
++
+ 
+-
+ #ifdef TEST
+ 
+ /* Compile with -DTEST to make an executable for use in testing
+-- 
+2.25.1
+

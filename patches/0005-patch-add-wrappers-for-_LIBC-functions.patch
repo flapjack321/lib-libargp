@@ -1,0 +1,47 @@
+From 3c3ab4c0b277ae04c938332cef1da289acc19fb4 Mon Sep 17 00:00:00 2001
+From: Ethan Cotterell <ethancotterell@gmail.com>
+Date: Thu, 3 Jun 2021 09:38:37 +0100
+Subject: [PATCH 5/8] patch: add wrappers for _LIBC functions
+
+---
+ gnulib/gllib/argp-namefrob.h | 12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
+
+diff --git a/gnulib/gllib/argp-namefrob.h b/gnulib/gllib/argp-namefrob.h
+index 022b880..0b42569 100644
+--- a/gnulib/gllib/argp-namefrob.h
++++ b/gnulib/gllib/argp-namefrob.h
+@@ -75,6 +75,8 @@
+ #undef __argp_fmtstream_wmargin
+ #define __argp_fmtstream_wmargin argp_fmtstream_wmargin
+ 
++#endif
++
+ /* normal libc functions we call */
+ #undef __flockfile
+ #define __flockfile flockfile
+@@ -95,6 +97,8 @@
+ #undef __vsnprintf
+ #define __vsnprintf vsnprintf
+ 
++#if !_LIBC
++
+ #if defined(HAVE_DECL_CLEARERR_UNLOCKED) && !HAVE_DECL_CLEARERR_UNLOCKED
+ # define clearerr_unlocked(x) clearerr (x)
+ #endif
+@@ -150,8 +154,8 @@ extern char *__argp_base_name (const char *arg);
+ # define __argp_base_name last_component
+ #endif
+ 
+-#if defined _LIBC || HAVE_DECL_PROGRAM_INVOCATION_SHORT_NAME
+-# define __argp_short_program_name()    (program_invocation_short_name)
+-#else
++// #if defined _LIBC || HAVE_DECL_PROGRAM_INVOCATION_SHORT_NAME
++// # define __argp_short_program_name()    (program_invocation_short_name)
++// #else
+ extern char *__argp_short_program_name (void);
+-#endif
++// #endif
+-- 
+2.25.1
+

@@ -1,0 +1,194 @@
+From bc10c6b15a9d8634bdb2b0bbd368ed3d8a55b51f Mon Sep 17 00:00:00 2001
+From: Ethan Cotterell <ethancotterell@gmail.com>
+Date: Thu, 3 Jun 2021 09:39:36 +0100
+Subject: [PATCH 6/8] patch: remove dependency on `short_program_name`
+
+---
+ gnulib/gllib/argp-parse.c | 65 +++++++++++++++++++++++----------------
+ 1 file changed, 39 insertions(+), 26 deletions(-)
+
+diff --git a/gnulib/gllib/argp-parse.c b/gnulib/gllib/argp-parse.c
+index 5fe651f..0472725 100644
+--- a/gnulib/gllib/argp-parse.c
++++ b/gnulib/gllib/argp-parse.c
+@@ -30,14 +30,14 @@
+ #include <getopt.h>
+ #include <getopt_int.h>
+ 
+-#ifdef _LIBC
+-# include <libintl.h>
+-# undef dgettext
+-# define dgettext(domain, msgid) \
+-   __dcgettext (domain, msgid, LC_MESSAGES)
+-#else
++// #ifdef _LIBC
++// # include <libintl.h>
++// # undef dgettext
++// # define dgettext(domain, msgid) \
++//    __dcgettext (domain, msgid, LC_MESSAGES)
++// #else
+ # include "gettext.h"
+-#endif
++// #endif
+ #define N_(msgid) msgid
+ 
+ #include "argp.h"
+@@ -63,7 +63,8 @@
+ 
+ /* EZ alias for ARGP_ERR_UNKNOWN.  */
+ #define EBADKEY ARGP_ERR_UNKNOWN
+-
++
++
+ /* Default options.  */
+ 
+ /* When argp is given the --HANG switch, _ARGP_HANG is set and argp will sleep
+@@ -101,9 +102,9 @@ argp_default_parser (int key, char *arg, struct argp_state *state)
+       break;
+ 
+     case OPT_PROGNAME:          /* Set the program name.  */
+-#if defined _LIBC || HAVE_DECL_PROGRAM_INVOCATION_NAME
+-      program_invocation_name = arg;
+-#endif
++// #if defined _LIBC || HAVE_DECL_PROGRAM_INVOCATION_NAME
++//      program_invocation_name = arg;
++// #endif
+       /* [Note that some systems only have PROGRAM_INVOCATION_SHORT_NAME (aka
+          __PROGNAME), in which case, PROGRAM_INVOCATION_NAME is just defined
+          to be that, so we have to be a bit careful here.]  */
+@@ -111,9 +112,9 @@ argp_default_parser (int key, char *arg, struct argp_state *state)
+       /* Update what we use for messages.  */
+       state->name = __argp_base_name (arg);
+ 
+-#if defined _LIBC || HAVE_DECL_PROGRAM_INVOCATION_SHORT_NAME
+-      program_invocation_short_name = state->name;
+-#endif
++// #if defined _LIBC || HAVE_DECL_PROGRAM_INVOCATION_SHORT_NAME
++//      program_invocation_short_name = state->name;
++// #endif
+ 
+       if ((state->flags & (ARGP_PARSE_ARGV0 | ARGP_NO_ERRS))
+           == ARGP_PARSE_ARGV0)
+@@ -137,7 +138,8 @@ argp_default_parser (int key, char *arg, struct argp_state *state)
+ static const struct argp argp_default_argp =
+   {argp_default_options, &argp_default_parser, NULL, NULL, NULL, NULL, "libc"};
+ 
+-
++
++
+ static const struct argp_option argp_version_options[] =
+ {
+   {"version",     'V',          0, 0,  N_("print program version"), -1},
+@@ -169,7 +171,8 @@ argp_version_parser (int key, char *arg, struct argp_state *state)
+ 
+ static const struct argp argp_version_argp =
+   {argp_version_options, &argp_version_parser, NULL, NULL, NULL, NULL, "libc"};
+-
++
++
+ /* Returns the offset into the getopt long options array LONG_OPTIONS of a
+    long option with called NAME, or -1 if none is found.  Passing NULL as
+    NAME will return the number of options.  */
+@@ -188,7 +191,8 @@ find_long_option (struct option *long_options, const char *name)
+     return -1;
+ }
+ 
+-
++
++
+ /* The state of a "group" during parsing.  Each group corresponds to a
+    particular argp structure from the tree of such descending from the top
+    level argp passed to argp_parse.  */
+@@ -238,7 +242,8 @@ group_parse (struct group *group, struct argp_state *state, int key, char *arg)
+   else
+     return EBADKEY;
+ }
+-
++
++
+ struct parser
+ {
+   const struct argp *argp;
+@@ -271,7 +276,8 @@ struct parser
+   /* Memory used by this parser.  */
+   void *storage;
+ };
+-
++
++
+ /* The next usable entries in the various parser tables being filled in by
+    convert_options.  */
+ struct parser_convert_state
+@@ -413,7 +419,8 @@ parser_convert (struct parser *parser, const struct argp *argp, int flags)
+   else
+     parser->egroup = parser->groups; /* No parsers at all! */
+ }
+-
++
++
+ /* Lengths of various parser fields which we will allocated.  */
+ struct parser_sizes
+ {
+@@ -565,7 +572,8 @@ parser_init (struct parser *parser, const struct argp *argp,
+ 
+   return 0;
+ }
+-
++
++
+ /* Free any storage consumed by PARSER (but not PARSER itself).  */
+ static error_t
+ parser_finalize (struct parser *parser,
+@@ -657,7 +665,8 @@ parser_finalize (struct parser *parser,
+ 
+   return err;
+ }
+-
++
++
+ /* Call the user parsers to parse the non-option argument VAL, at the current
+    position, returning any error.  The state NEXT pointer is assumed to have
+    been adjusted (by getopt) to point after this argument; this function will
+@@ -711,7 +720,8 @@ parser_parse_arg (struct parser *parser, char *val)
+ 
+   return err;
+ }
+-
++
++
+ /* Call the user parsers to parse the option OPT, with argument VAL, at the
+    current position, returning any error.  */
+ static error_t
+@@ -773,7 +783,8 @@ parser_parse_opt (struct parser *parser, int opt, char *val)
+ 
+   return err;
+ }
+-
++
++
+ /* Parse the next argument in PARSER (as indicated by PARSER->state.next).
+    Any error from the parsers is returned, and *ARGP_EBADKEY indicates
+    whether a value of EBADKEY is due to an unrecognized argument (which is
+@@ -864,7 +875,8 @@ parser_parse_next (struct parser *parser, int *arg_ebadkey)
+ 
+   return err;
+ }
+-
++
++
+ /* Parse the options strings in ARGC & ARGV according to the argp in ARGP.
+    FLAGS is one of the ARGP_ flags above.  If END_INDEX is non-NULL, the
+    index in ARGV of the first unparsed option is returned in it.  If an
+@@ -934,7 +946,8 @@ __argp_parse (const struct argp *argp, int argc, char **argv, unsigned flags,
+ #ifdef weak_alias
+ weak_alias (__argp_parse, argp_parse)
+ #endif
+-
++
++
+ /* Return the input field for ARGP in the parser corresponding to STATE; used
+    by the help routines.  */
+ void *
+-- 
+2.25.1
+
