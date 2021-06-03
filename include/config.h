@@ -69,11 +69,11 @@
 
 /* Define to 1 to add extern declaration of program_invocation_name to argp.h
    */
-#undef GNULIB_PROGRAM_INVOCATION_NAME
+#define GNULIB_PROGRAM_INVOCATION_NAME 1
 
 /* Define to 1 to add extern declaration of program_invocation_short_name to
    argp.h */
-#undef GNULIB_PROGRAM_INVOCATION_SHORT_NAME
+#define GNULIB_PROGRAM_INVOCATION_SHORT_NAME 1
 
 /* Define to a C preprocessor expression that evaluates to 1 or 0, depending
    whether the gnulib module scanf shall be considered present. */
@@ -382,13 +382,13 @@
 #define HAVE_FEATURES_H 1
 
 /* Define to 1 if you have the `flockfile' function. */
-#define HAVE_FLOCKFILE 1
+#define HAVE_FLOCKFILE 0
 
 /* Define to 1 if you have the `ftruncate' function. */
 #define HAVE_FTRUNCATE 1
 
 /* Define to 1 if you have the `funlockfile' function. */
-#define HAVE_FUNLOCKFILE 1
+#define HAVE_FUNLOCKFILE 0
 
 /* Define to 1 if you have the `getdtablesize' function. */
 #define HAVE_GETDTABLESIZE 1
@@ -397,7 +397,7 @@
 #define HAVE_GETOPT_H 1
 
 /* Define to 1 if you have the `getopt_long_only' function. */
-#define HAVE_GETOPT_LONG_ONLY 1
+#define HAVE_GETOPT_LONG_ONLY 0
 
 /* Define to 1 if you have the `gettimeofday' function. */
 #define HAVE_GETTIMEOFDAY 1
@@ -1284,6 +1284,13 @@
 /* Define to an unsigned 32-bit type if <sys/types.h> lacks this type. */
 /* #undef useconds_t */
 
-
-#define ENABLE_NLS 0
-#define _LIBC 1
+/* Custom definitions */
+#ifndef __getopt_argv_const
+# if defined __GETOPT_PREFIX
+#  define __getopt_argv_const /* empty */
+# else
+#  define __getopt_argv_const const
+# endif
+#endif
+// #define ENABLE_NLS 0
+// #define _LIBC 1
