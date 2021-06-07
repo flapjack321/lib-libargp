@@ -65,7 +65,7 @@ LIBARGP_FLAGS = -D _LIBC
 
 
 # Suppress some warnings to make the build process look neater
-LIBARGP_FLAGS_SUPPRESS = -Wunused-parameter
+LIBARGP_FLAGS_SUPPRESS = -Wunused-parameter -Wcomment -Wunused-parameter
 
 LIBARGP_CFLAGS-y += $(LIBARGP_FLAGS)
 LIBARGP_CFLAGS-y += $(LIBARGP_FLAGS_SUPPRESS)
