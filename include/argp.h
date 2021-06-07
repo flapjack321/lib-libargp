@@ -425,17 +425,17 @@ extern error_t __argp_parse (const struct argp *__restrict __argp,
 
 /* GNULIB makes sure both program_invocation_name and
    program_invocation_short_name are available */
-#ifdef GNULIB_PROGRAM_INVOCATION_NAME
+// #ifdef GNULIB_PROGRAM_INVOCATION_NAME
 extern char *program_invocation_name;
 # undef HAVE_DECL_PROGRAM_INVOCATION_NAME
 # define HAVE_DECL_PROGRAM_INVOCATION_NAME 1
-#endif
+// #endif
 
-#ifdef GNULIB_PROGRAM_INVOCATION_SHORT_NAME
+// #ifdef GNULIB_PROGRAM_INVOCATION_SHORT_NAME
 extern char *program_invocation_short_name;
 # undef HAVE_DECL_PROGRAM_INVOCATION_SHORT_NAME
 # define HAVE_DECL_PROGRAM_INVOCATION_SHORT_NAME 1
-#endif
+// #endif
 
 /* If defined or set by the user program to a non-zero value, then a default
    option --version is added (unless the ARGP_NO_HELP flag is used), which
