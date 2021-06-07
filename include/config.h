@@ -69,11 +69,11 @@
 
 /* Define to 1 to add extern declaration of program_invocation_name to argp.h
    */
-#undef GNULIB_PROGRAM_INVOCATION_NAME
+#define GNULIB_PROGRAM_INVOCATION_NAME 1
 
 /* Define to 1 to add extern declaration of program_invocation_short_name to
    argp.h */
-#undef GNULIB_PROGRAM_INVOCATION_SHORT_NAME
+#define GNULIB_PROGRAM_INVOCATION_SHORT_NAME  1
 
 /* Define to a C preprocessor expression that evaluates to 1 or 0, depending
    whether the gnulib module scanf shall be considered present. */
@@ -315,11 +315,11 @@
 
 /* Define to 1 if you have the declaration of `program_invocation_name', and
    to 0 if you don't. */
-#undef HAVE_DECL_PROGRAM_INVOCATION_NAME
+// #define HAVE_DECL_PROGRAM_INVOCATION_NAME 0
 
 /* Define to 1 if you have the declaration of `program_invocation_short_name',
    and to 0 if you don't. */
-#undef HAVE_DECL_PROGRAM_INVOCATION_SHORT_NAME
+// #define HAVE_DECL_PROGRAM_INVOCATION_SHORT_NAME 0
 
 /* Define to 1 if you have the declaration of `putchar_unlocked', and to 0 if
    you don't. */
@@ -1283,7 +1283,3 @@
 
 /* Define to an unsigned 32-bit type if <sys/types.h> lacks this type. */
 /* #undef useconds_t */
-
-
-#define ENABLE_NLS 0
-#define _LIBC 1
