@@ -56,11 +56,12 @@ LIBARGP_SRC = $(LIBARGP_ORIGIN)/$(LIBARGP_SUBDIR)/gnulib/gllib
 # Library includes
 ################################################################################
 CINCLUDES-y += -I$(LIBARGP_BASE)/include
+CINCLUDES-y += -I$(LIBARGP_EXTRACTED)/include
 
 ################################################################################
 # Flags
 ################################################################################
-LIBARGP_FLAGS = -DHAVE_CONFIG_H -D _LIBC
+LIBARGP_FLAGS = -D _LIBC
 
 
 # Suppress some warnings to make the build process look neater
@@ -80,6 +81,12 @@ LIBARGPSRCS-$(CONFIG_LIBARGP_MAIN_FUNCTION) += $(LIBARGP_BASE)/main.c|unikraft
 ################################################################################
 # Library sources
 ################################################################################
+LIBARGP_SRCS-y += $(LIBARGP_BASE)/progname.c
+LIBARGP_SRCS-y += $(LIBARGP_SRC)/basename-lgpl.c
+LIBARGP_SRCS-y += $(LIBARGP_SRC)/dirname-lgpl.c
+LIBARGP_SRCS-y += $(LIBARGP_SRC)/getopt.c
+LIBARGP_SRCS-y += $(LIBARGP_SRC)/getopt1.c
+
 LIBARGP_SRCS-y += $(LIBARGP_SRC)/argp-ba.c
 LIBARGP_SRCS-y += $(LIBARGP_SRC)/argp-eexst.c
 LIBARGP_SRCS-y += $(LIBARGP_SRC)/argp-fmtstream.c
