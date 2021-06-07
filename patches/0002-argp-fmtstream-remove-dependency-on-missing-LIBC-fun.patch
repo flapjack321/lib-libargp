@@ -1,0 +1,67 @@
+From 579ee38b4d1db9b24750962ea8b8d7e0bd8ae3c1 Mon Sep 17 00:00:00 2001
+From: Ethan Cotterell <ethancotterell@gmail.com>
+Date: Mon, 7 Jun 2021 12:27:48 +0100
+Subject: [PATCH 02/11] argp-fmtstream: remove dependency on missing LIBC
+ functions
+
+---
+ gnulib/gllib/argp-fmtstream.c | 28 ++++++++++++++--------------
+ 1 file changed, 14 insertions(+), 14 deletions(-)
+
+diff --git a/gnulib/gllib/argp-fmtstream.c b/gnulib/gllib/argp-fmtstream.c
+index 870c21c..733cf0a 100644
+--- a/gnulib/gllib/argp-fmtstream.c
++++ b/gnulib/gllib/argp-fmtstream.c
+@@ -38,11 +38,11 @@
+ #define isblank(ch) ((ch)==' ' || (ch)=='\t')
+ #endif
+ 
+-#ifdef _LIBC
+-# include <wchar.h>
+-# include <libio/libioP.h>
+-# define __vsnprintf(s, l, f, a) _IO_vsnprintf (s, l, f, a)
+-#endif
++// #ifdef _LIBC
++// # include <wchar.h>
++// # include <libio/libioP.h>
++// # define __vsnprintf(s, l, f, a) _IO_vsnprintf (s, l, f, a)
++// #endif
+ 
+ #define INIT_BUF_SIZE 200
+ #define PRINTF_SIZE_GUESS 150
+@@ -99,11 +99,11 @@ __argp_fmtstream_free (argp_fmtstream_t fs)
+   __argp_fmtstream_update (fs);
+   if (fs->p > fs->buf)
+     {
+-#ifdef _LIBC
+-      __fxprintf (fs->stream, "%.*s", (int) (fs->p - fs->buf), fs->buf);
+-#else
++// #ifdef _LIBC
++//       __fxprintf (fs->stream, "%.*s", (int) (fs->p - fs->buf), fs->buf);
++// #else
+       fwrite_unlocked (fs->buf, 1, fs->p - fs->buf, fs->stream);
+-#endif
++// #endif
+     }
+   free (fs->buf);
+   free (fs);
+@@ -148,11 +148,11 @@ __argp_fmtstream_update (argp_fmtstream_t fs)
+               size_t i;
+               for (i = 0; i < pad; i++)
+                 {
+-#ifdef _LIBC
+-                  if (_IO_fwide (fs->stream, 0) > 0)
+-                    putwc_unlocked (L' ', fs->stream);
+-                  else
+-#endif
++// #ifdef _LIBC
++//                   if (_IO_fwide (fs->stream, 0) > 0)
++//                     putwc_unlocked (L' ', fs->stream);
++//                   else
++// #endif
+                     putc_unlocked (' ', fs->stream);
+                 }
+             }
+-- 
+2.25.1
+

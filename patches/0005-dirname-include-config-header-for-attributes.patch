@@ -1,0 +1,24 @@
+From 24b6be4ef45880723ec1db08e83351e46fd0b388 Mon Sep 17 00:00:00 2001
+From: Ethan Cotterell <ethancotterell@gmail.com>
+Date: Mon, 7 Jun 2021 14:37:12 +0100
+Subject: [PATCH 05/11] dirname: include config header for attributes
+
+---
+ gnulib/gllib/dirname.h | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/gnulib/gllib/dirname.h b/gnulib/gllib/dirname.h
+index 8c12d93..744f5bf 100644
+--- a/gnulib/gllib/dirname.h
++++ b/gnulib/gllib/dirname.h
+@@ -19,6 +19,7 @@
+ #ifndef DIRNAME_H_
+ # define DIRNAME_H_ 1
+ 
++# include <config.h>
+ # include <stdbool.h>
+ # include <stddef.h>
+ # include "dosname.h"
+-- 
+2.25.1
+

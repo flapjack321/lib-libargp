@@ -1,0 +1,71 @@
+From 03931f1dbadee393c953c73144000443736fc2bd Mon Sep 17 00:00:00 2001
+From: Ethan Cotterell <ethancotterell@gmail.com>
+Date: Mon, 7 Jun 2021 14:44:02 +0100
+Subject: [PATCH 06/11] argp-fmtstream: remove LIBC only function calls
+
+---
+ gnulib/gllib/argp-fmtstream.c | 30 +++++++++++++++---------------
+ 1 file changed, 15 insertions(+), 15 deletions(-)
+
+diff --git a/gnulib/gllib/argp-fmtstream.c b/gnulib/gllib/argp-fmtstream.c
+index 733cf0a..2643a06 100644
+--- a/gnulib/gllib/argp-fmtstream.c
++++ b/gnulib/gllib/argp-fmtstream.c
+@@ -289,14 +289,14 @@ __argp_fmtstream_update (argp_fmtstream_t fs)
+               else
+                 /* Output the first line so we can use the space.  */
+                 {
+-#ifdef _LIBC
+-                  __fxprintf (fs->stream, "%.*s\n",
+-                              (int) (nl - fs->buf), fs->buf);
+-#else
++// #ifdef _LIBC
++//                   __fxprintf (fs->stream, "%.*s\n",
++//                               (int) (nl - fs->buf), fs->buf);
++// #else
+                   if (nl > fs->buf)
+                     fwrite_unlocked (fs->buf, 1, nl - fs->buf, fs->stream);
+                   putc_unlocked ('\n', fs->stream);
+-#endif
++// #endif
+ 
+                   len += buf - fs->buf;
+                   nl = buf = fs->buf;
+@@ -314,11 +314,11 @@ __argp_fmtstream_update (argp_fmtstream_t fs)
+               *nl++ = ' ';
+           else
+             for (i = 0; i < fs->wmargin; ++i)
+-#ifdef _LIBC
+-              if (_IO_fwide (fs->stream, 0) > 0)
+-                putwc_unlocked (L' ', fs->stream);
+-              else
+-#endif
++// #ifdef _LIBC
++//               if (_IO_fwide (fs->stream, 0) > 0)
++//                 putwc_unlocked (L' ', fs->stream);
++//               else
++// #endif
+                 putc_unlocked (' ', fs->stream);
+ 
+           /* Copy the tail of the original buffer into the current buffer
+@@ -356,12 +356,12 @@ __argp_fmtstream_ensure (struct argp_fmtstream *fs, size_t amount)
+       /* Flush FS's buffer.  */
+       __argp_fmtstream_update (fs);
+ 
+-#ifdef _LIBC
+-      __fxprintf (fs->stream, "%.*s", (int) (fs->p - fs->buf), fs->buf);
+-      wrote = fs->p - fs->buf;
+-#else
++// #ifdef _LIBC
++//       __fxprintf (fs->stream, "%.*s", (int) (fs->p - fs->buf), fs->buf);
++//       wrote = fs->p - fs->buf;
++// #else
+       wrote = fwrite_unlocked (fs->buf, 1, fs->p - fs->buf, fs->stream);
+-#endif
++// #endif
+       if (wrote == fs->p - fs->buf)
+         {
+           fs->p = fs->buf;
+-- 
+2.25.1
+

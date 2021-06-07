@@ -1,0 +1,38 @@
+From 36d29f4112264a52d1adc9b9f3c7c3c585b6a264 Mon Sep 17 00:00:00 2001
+From: Ethan Cotterell <ethancotterell@gmail.com>
+Date: Mon, 7 Jun 2021 15:03:25 +0100
+Subject: [PATCH 07/11] argp-parse: remove libintl dependency
+
+---
+ gnulib/gllib/argp-parse.c | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
+
+diff --git a/gnulib/gllib/argp-parse.c b/gnulib/gllib/argp-parse.c
+index 5fe651f..9645fe3 100644
+--- a/gnulib/gllib/argp-parse.c
++++ b/gnulib/gllib/argp-parse.c
+@@ -30,14 +30,14 @@
+ #include <getopt.h>
+ #include <getopt_int.h>
+ 
+-#ifdef _LIBC
+-# include <libintl.h>
+-# undef dgettext
+-# define dgettext(domain, msgid) \
+-   __dcgettext (domain, msgid, LC_MESSAGES)
+-#else
++// #ifdef _LIBC
++// # include <libintl.h>
++// # undef dgettext
++// # define dgettext(domain, msgid) \
++//    __dcgettext (domain, msgid, LC_MESSAGES)
++// #else
+ # include "gettext.h"
+-#endif
++// #endif
+ #define N_(msgid) msgid
+ 
+ #include "argp.h"
+-- 
+2.25.1
+

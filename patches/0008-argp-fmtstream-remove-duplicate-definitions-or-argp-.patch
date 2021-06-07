@@ -1,0 +1,191 @@
+From ae07687bf8c556a6f86105b0de1bc0071e8e6521 Mon Sep 17 00:00:00 2001
+From: Ethan Cotterell <ethancotterell@gmail.com>
+Date: Mon, 7 Jun 2021 15:43:43 +0100
+Subject: [PATCH 08/11] argp-fmtstream: remove duplicate definitions or argp
+ functions
+
+---
+ gnulib/gllib/argp-fmtstream.h | 129 +++++++++++++++++-----------------
+ 1 file changed, 65 insertions(+), 64 deletions(-)
+
+diff --git a/gnulib/gllib/argp-fmtstream.h b/gnulib/gllib/argp-fmtstream.h
+index e7713c4..8029469 100644
+--- a/gnulib/gllib/argp-fmtstream.h
++++ b/gnulib/gllib/argp-fmtstream.h
+@@ -24,6 +24,7 @@
+ #ifndef _ARGP_FMTSTREAM_H
+ #define _ARGP_FMTSTREAM_H
+ 
++#include <config.h>
+ #include <stdio.h>
+ #include <string.h>
+ #include <unistd.h>
+@@ -133,18 +134,18 @@ extern ssize_t argp_fmtstream_printf (argp_fmtstream_t __fs,
+                                       const char *__fmt, ...)
+      _GL_ATTRIBUTE_FORMAT ((printf, 2, 3));
+ 
+-#if _LIBC
+-extern int __argp_fmtstream_putc (argp_fmtstream_t __fs, int __ch);
+-extern int argp_fmtstream_putc (argp_fmtstream_t __fs, int __ch);
+-
+-extern int __argp_fmtstream_puts (argp_fmtstream_t __fs, const char *__str);
+-extern int argp_fmtstream_puts (argp_fmtstream_t __fs, const char *__str);
+-
+-extern size_t __argp_fmtstream_write (argp_fmtstream_t __fs,
+-                                      const char *__str, size_t __len);
+-extern size_t argp_fmtstream_write (argp_fmtstream_t __fs,
+-                                    const char *__str, size_t __len);
+-#endif
++// #if _LIBC
++// extern int __argp_fmtstream_putc (argp_fmtstream_t __fs, int __ch);
++// extern int argp_fmtstream_putc (argp_fmtstream_t __fs, int __ch);
++//
++// extern int __argp_fmtstream_puts (argp_fmtstream_t __fs, const char *__str);
++// extern int argp_fmtstream_puts (argp_fmtstream_t __fs, const char *__str);
++//
++// extern size_t __argp_fmtstream_write (argp_fmtstream_t __fs,
++//                                       const char *__str, size_t __len);
++// extern size_t argp_fmtstream_write (argp_fmtstream_t __fs,
++//                                     const char *__str, size_t __len);
++// #endif
+ 
+ /* Access macros for various bits of state.  */
+ #define argp_fmtstream_lmargin(__fs) ((__fs)->lmargin)
+@@ -154,29 +155,29 @@ extern size_t argp_fmtstream_write (argp_fmtstream_t __fs,
+ #define __argp_fmtstream_rmargin argp_fmtstream_rmargin
+ #define __argp_fmtstream_wmargin argp_fmtstream_wmargin
+ 
+-#if _LIBC
+-/* Set __FS's left margin to LMARGIN and return the old value.  */
+-extern size_t argp_fmtstream_set_lmargin (argp_fmtstream_t __fs,
+-                                          size_t __lmargin);
+-extern size_t __argp_fmtstream_set_lmargin (argp_fmtstream_t __fs,
+-                                            size_t __lmargin);
+-
+-/* Set __FS's right margin to __RMARGIN and return the old value.  */
+-extern size_t argp_fmtstream_set_rmargin (argp_fmtstream_t __fs,
+-                                          size_t __rmargin);
+-extern size_t __argp_fmtstream_set_rmargin (argp_fmtstream_t __fs,
+-                                            size_t __rmargin);
+-
+-/* Set __FS's wrap margin to __WMARGIN and return the old value.  */
+-extern size_t argp_fmtstream_set_wmargin (argp_fmtstream_t __fs,
+-                                          size_t __wmargin);
+-extern size_t __argp_fmtstream_set_wmargin (argp_fmtstream_t __fs,
+-                                            size_t __wmargin);
+-
+-/* Return the column number of the current output point in __FS.  */
+-extern size_t argp_fmtstream_point (argp_fmtstream_t __fs);
+-extern size_t __argp_fmtstream_point (argp_fmtstream_t __fs);
+-#endif
++// #if _LIBC
++// /* Set __FS's left margin to LMARGIN and return the old value.  */
++// extern size_t argp_fmtstream_set_lmargin (argp_fmtstream_t __fs,
++//                                           size_t __lmargin);
++// extern size_t __argp_fmtstream_set_lmargin (argp_fmtstream_t __fs,
++//                                             size_t __lmargin);
++//
++// /* Set __FS's right margin to __RMARGIN and return the old value.  */
++// extern size_t argp_fmtstream_set_rmargin (argp_fmtstream_t __fs,
++//                                           size_t __rmargin);
++// extern size_t __argp_fmtstream_set_rmargin (argp_fmtstream_t __fs,
++//                                             size_t __rmargin);
++//
++// /* Set __FS's wrap margin to __WMARGIN and return the old value.  */
++// extern size_t argp_fmtstream_set_wmargin (argp_fmtstream_t __fs,
++//                                           size_t __wmargin);
++// extern size_t __argp_fmtstream_set_wmargin (argp_fmtstream_t __fs,
++//                                             size_t __wmargin);
++//
++// /* Return the column number of the current output point in __FS.  */
++// extern size_t argp_fmtstream_point (argp_fmtstream_t __fs);
++// extern size_t __argp_fmtstream_point (argp_fmtstream_t __fs);
++// #endif
+ 
+ /* Internal routines.  */
+ extern void _argp_fmtstream_update (argp_fmtstream_t __fs);
+@@ -184,19 +185,19 @@ extern void __argp_fmtstream_update (argp_fmtstream_t __fs);
+ extern int _argp_fmtstream_ensure (argp_fmtstream_t __fs, size_t __amount);
+ extern int __argp_fmtstream_ensure (argp_fmtstream_t __fs, size_t __amount);
+ 
+-#if !_LIBC || defined __OPTIMIZE__
+-/* Inline versions of above routines.  */
+-
+-#if !_LIBC
+-#define __argp_fmtstream_putc argp_fmtstream_putc
+-#define __argp_fmtstream_puts argp_fmtstream_puts
+-#define __argp_fmtstream_write argp_fmtstream_write
+-#define __argp_fmtstream_set_lmargin argp_fmtstream_set_lmargin
+-#define __argp_fmtstream_set_rmargin argp_fmtstream_set_rmargin
+-#define __argp_fmtstream_set_wmargin argp_fmtstream_set_wmargin
+-#define __argp_fmtstream_point argp_fmtstream_point
+-#define __argp_fmtstream_update _argp_fmtstream_update
+-#define __argp_fmtstream_ensure _argp_fmtstream_ensure
++// #if !_LIBC || defined __OPTIMIZE__
++// /* Inline versions of above routines.  */
++//
++// #if !_LIBC
++// #define __argp_fmtstream_putc argp_fmtstream_putc
++// #define __argp_fmtstream_puts argp_fmtstream_puts
++// #define __argp_fmtstream_write argp_fmtstream_write
++// #define __argp_fmtstream_set_lmargin argp_fmtstream_set_lmargin
++// #define __argp_fmtstream_set_rmargin argp_fmtstream_set_rmargin
++// #define __argp_fmtstream_set_wmargin argp_fmtstream_set_wmargin
++// #define __argp_fmtstream_point argp_fmtstream_point
++// #define __argp_fmtstream_update _argp_fmtstream_update
++// #define __argp_fmtstream_ensure _argp_fmtstream_ensure
+ #ifndef _GL_INLINE_HEADER_BEGIN
+  #error "Please include config.h first."
+ #endif
+@@ -204,11 +205,11 @@ _GL_INLINE_HEADER_BEGIN
+ #ifndef ARGP_FS_EI
+ # define ARGP_FS_EI _GL_INLINE
+ #endif
+-#endif
++// #endif
+ 
+-#ifndef ARGP_FS_EI
+-#define ARGP_FS_EI extern inline
+-#endif
++// #ifndef ARGP_FS_EI
++// #define ARGP_FS_EI extern inline
++// #endif
+ 
+ ARGP_FS_EI size_t
+ __argp_fmtstream_write (argp_fmtstream_t __fs, const char *__str, size_t __len)
+@@ -290,20 +291,20 @@ __argp_fmtstream_point (argp_fmtstream_t __fs)
+   return __fs->point_col >= 0 ? __fs->point_col : 0;
+ }
+ 
+-#if !_LIBC
+-#undef __argp_fmtstream_putc
+-#undef __argp_fmtstream_puts
+-#undef __argp_fmtstream_write
+-#undef __argp_fmtstream_set_lmargin
+-#undef __argp_fmtstream_set_rmargin
+-#undef __argp_fmtstream_set_wmargin
+-#undef __argp_fmtstream_point
+-#undef __argp_fmtstream_update
+-#undef __argp_fmtstream_ensure
++// #if !_LIBC
++// #undef __argp_fmtstream_putc
++// #undef __argp_fmtstream_puts
++// #undef __argp_fmtstream_write
++// #undef __argp_fmtstream_set_lmargin
++// #undef __argp_fmtstream_set_rmargin
++// #undef __argp_fmtstream_set_wmargin
++// #undef __argp_fmtstream_point
++// #undef __argp_fmtstream_update
++// #undef __argp_fmtstream_ensure
+ _GL_INLINE_HEADER_END
+-#endif
++// #endif
+ 
+-#endif /* !_LIBC || __OPTIMIZE__ */
++// #endif /* !_LIBC || __OPTIMIZE__ */
+ 
+ #endif /* ARGP_FMTSTREAM_USE_LINEWRAP */
+ 
+-- 
+2.25.1
+

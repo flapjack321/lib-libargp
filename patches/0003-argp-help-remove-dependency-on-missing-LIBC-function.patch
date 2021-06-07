@@ -1,0 +1,248 @@
+From 55a9c4f3e0da81b06ed839c89d17ed052aa5fc18 Mon Sep 17 00:00:00 2001
+From: Ethan Cotterell <ethancotterell@gmail.com>
+Date: Mon, 7 Jun 2021 12:28:09 +0100
+Subject: [PATCH 03/11] argp-help: remove dependency on missing LIBC functions
+
+---
+ gnulib/gllib/argp-help.c | 144 +++++++++++++++++++--------------------
+ 1 file changed, 72 insertions(+), 72 deletions(-)
+
+diff --git a/gnulib/gllib/argp-help.c b/gnulib/gllib/argp-help.c
+index 02faa60..62d8afb 100644
+--- a/gnulib/gllib/argp-help.c
++++ b/gnulib/gllib/argp-help.c
+@@ -34,19 +34,19 @@
+ #include <stdarg.h>
+ #include <ctype.h>
+ #include <limits.h>
+-#ifdef _LIBC
+-# include <../libio/libioP.h>
+-# include <wchar.h>
+-#endif
+-
+-#ifdef _LIBC
+-# include <libintl.h>
+-# undef dgettext
+-# define dgettext(domain, msgid) \
+-   __dcgettext (domain, msgid, LC_MESSAGES)
+-#else
++// #ifdef _LIBC
++// # include <../libio/libioP.h>
++// # include <wchar.h>
++// #endif
++
++// #ifdef _LIBC
++// # include <libintl.h>
++// # undef dgettext
++// # define dgettext(domain, msgid) \
++//    __dcgettext (domain, msgid, LC_MESSAGES)
++// #else
+ # include "gettext.h"
+-#endif
++// #endif
+ 
+ #include "argp.h"
+ #include "argp-fmtstream.h"
+@@ -1570,9 +1570,9 @@ _help (const struct argp *argp, const struct argp_state *state, FILE *stream,
+   if (! stream)
+     return;
+ 
+-#if _LIBC || (HAVE_FLOCKFILE && HAVE_FUNLOCKFILE)
+-  __flockfile (stream);
+-#endif
++// #if _LIBC || (HAVE_FLOCKFILE && HAVE_FUNLOCKFILE)
++//   __flockfile (stream);
++// #endif
+ 
+   if (! uparams.valid)
+     fill_in_uparams (state);
+@@ -1580,9 +1580,9 @@ _help (const struct argp *argp, const struct argp_state *state, FILE *stream,
+   fs = __argp_make_fmtstream (stream, 0, uparams.rmargin, 0);
+   if (! fs)
+     {
+-#if _LIBC || (HAVE_FLOCKFILE && HAVE_FUNLOCKFILE)
+-      __funlockfile (stream);
+-#endif
++// #if _LIBC || (HAVE_FLOCKFILE && HAVE_FUNLOCKFILE)
++//       __funlockfile (stream);
++// #endif
+       return;
+     }
+ 
+@@ -1690,9 +1690,9 @@ Try '%s --help' or '%s --usage' for more information.\n"),
+       anything = 1;
+     }
+ 
+-#if _LIBC || (HAVE_FLOCKFILE && HAVE_FUNLOCKFILE)
+-  __funlockfile (stream);
+-#endif
++// #if _LIBC || (HAVE_FLOCKFILE && HAVE_FUNLOCKFILE)
++//   __funlockfile (stream);
++// #endif
+ 
+   if (hol)
+     hol_free (hol);
+@@ -1770,23 +1770,23 @@ __argp_error (const struct argp_state *state, const char *fmt, ...)
+         {
+           va_list ap;
+ 
+-#if _LIBC || (HAVE_FLOCKFILE && HAVE_FUNLOCKFILE)
+-          __flockfile (stream);
+-#endif
++// #if _LIBC || (HAVE_FLOCKFILE && HAVE_FUNLOCKFILE)
++//           __flockfile (stream);
++// #endif
+ 
+           va_start (ap, fmt);
+ 
+-#ifdef _LIBC
+-          char *buf;
+-
+-          if (_IO_vasprintf (&buf, fmt, ap) < 0)
+-            buf = NULL;
+-
+-          __fxprintf (stream, "%s: %s\n",
+-                      state ? state->name : __argp_short_program_name (), buf);
+-
+-          free (buf);
+-#else
++// #ifdef _LIBC
++//           char *buf;
++//
++//           if (_IO_vasprintf (&buf, fmt, ap) < 0)
++//             buf = NULL;
++//
++//           __fxprintf (stream, "%s: %s\n",
++//                       state ? state->name : __argp_short_program_name (), buf);
++//
++//           free (buf);
++// #else
+           fputs_unlocked (state ? state->name : __argp_short_program_name (),
+                           stream);
+           putc_unlocked (':', stream);
+@@ -1795,15 +1795,15 @@ __argp_error (const struct argp_state *state, const char *fmt, ...)
+           vfprintf (stream, fmt, ap);
+ 
+           putc_unlocked ('\n', stream);
+-#endif
++// #endif
+ 
+           __argp_state_help (state, stream, ARGP_HELP_STD_ERR);
+ 
+           va_end (ap);
+ 
+-#if _LIBC || (HAVE_FLOCKFILE && HAVE_FUNLOCKFILE)
+-          __funlockfile (stream);
+-#endif
++// #if _LIBC || (HAVE_FLOCKFILE && HAVE_FUNLOCKFILE)
++//           __funlockfile (stream);
++// #endif
+         }
+     }
+ }
+@@ -1829,38 +1829,38 @@ __argp_failure (const struct argp_state *state, int status, int errnum,
+ 
+       if (stream)
+         {
+-#if _LIBC || (HAVE_FLOCKFILE && HAVE_FUNLOCKFILE)
+-          __flockfile (stream);
+-#endif
+-
+-#ifdef _LIBC
+-          __fxprintf (stream, "%s",
+-                      state ? state->name : __argp_short_program_name ());
+-#else
++// #if _LIBC || (HAVE_FLOCKFILE && HAVE_FUNLOCKFILE)
++//           __flockfile (stream);
++// #endif
++
++// #ifdef _LIBC
++//           __fxprintf (stream, "%s",
++//                       state ? state->name : __argp_short_program_name ());
++// #else
+           fputs_unlocked (state ? state->name : __argp_short_program_name (),
+                           stream);
+-#endif
++// #endif
+ 
+           if (fmt)
+             {
+               va_list ap;
+ 
+               va_start (ap, fmt);
+-#ifdef _LIBC
+-              char *buf;
+-
+-              if (_IO_vasprintf (&buf, fmt, ap) < 0)
+-                buf = NULL;
+-
+-              __fxprintf (stream, ": %s", buf);
+-
+-              free (buf);
+-#else
++// #ifdef _LIBC
++//               char *buf;
++//
++//               if (_IO_vasprintf (&buf, fmt, ap) < 0)
++//                 buf = NULL;
++//
++//               __fxprintf (stream, ": %s", buf);
++//
++//               free (buf);
++// #else
+               putc_unlocked (':', stream);
+               putc_unlocked (' ', stream);
+ 
+               vfprintf (stream, fmt, ap);
+-#endif
++// #endif
+ 
+               va_end (ap);
+             }
+@@ -1869,10 +1869,10 @@ __argp_failure (const struct argp_state *state, int status, int errnum,
+             {
+               char buf[200];
+ 
+-#ifdef _LIBC
+-              __fxprintf (stream, ": %s",
+-                          __strerror_r (errnum, buf, sizeof (buf)));
+-#else
++// #ifdef _LIBC
++//               __fxprintf (stream, ": %s",
++//                           __strerror_r (errnum, buf, sizeof (buf)));
++// #else
+               char const *s = NULL;
+               putc_unlocked (':', stream);
+               putc_unlocked (' ', stream);
+@@ -1888,19 +1888,19 @@ __argp_failure (const struct argp_state *state, int status, int errnum,
+                 s = dgettext (state->root_argp->argp_domain,
+                               "Unknown system error");
+               fputs_unlocked (s, stream);
+-#endif
++// #endif
+             }
+ 
+-#if _LIBC
+-          if (_IO_fwide (stream, 0) > 0)
+-            putwc_unlocked (L'\n', stream);
+-          else
+-#endif
++// #if _LIBC
++//           if (_IO_fwide (stream, 0) > 0)
++//             putwc_unlocked (L'\n', stream);
++//           else
++// #endif
+             putc_unlocked ('\n', stream);
+ 
+-#if _LIBC || (HAVE_FLOCKFILE && HAVE_FUNLOCKFILE)
+-          __funlockfile (stream);
+-#endif
++// #if _LIBC || (HAVE_FLOCKFILE && HAVE_FUNLOCKFILE)
++//           __funlockfile (stream);
++// #endif
+ 
+           if (status && (!state || !(state->flags & ARGP_NO_EXIT)))
+             exit (status);
+-- 
+2.25.1
+

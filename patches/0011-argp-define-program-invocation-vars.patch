@@ -1,0 +1,38 @@
+From 3601a96eadbf97b33b7185bcc843b31814637287 Mon Sep 17 00:00:00 2001
+From: Ethan Cotterell <ethancotterell@gmail.com>
+Date: Mon, 7 Jun 2021 16:38:23 +0100
+Subject: [PATCH 11/11] argp: define program invocation vars
+
+---
+ gnulib/gllib/argp.h | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/gnulib/gllib/argp.h b/gnulib/gllib/argp.h
+index 4cc6563..3f2b6f2 100644
+--- a/gnulib/gllib/argp.h
++++ b/gnulib/gllib/argp.h
+@@ -427,17 +427,17 @@ extern error_t __argp_parse (const struct argp *__restrict __argp,
+ 
+ /* GNULIB makes sure both program_invocation_name and
+    program_invocation_short_name are available */
+-#ifdef GNULIB_PROGRAM_INVOCATION_NAME
++// #ifdef GNULIB_PROGRAM_INVOCATION_NAME
+ extern char *program_invocation_name;
+ # undef HAVE_DECL_PROGRAM_INVOCATION_NAME
+ # define HAVE_DECL_PROGRAM_INVOCATION_NAME 1
+-#endif
++// #endif
+ 
+-#ifdef GNULIB_PROGRAM_INVOCATION_SHORT_NAME
++// #ifdef GNULIB_PROGRAM_INVOCATION_SHORT_NAME
+ extern char *program_invocation_short_name;
+ # undef HAVE_DECL_PROGRAM_INVOCATION_SHORT_NAME
+ # define HAVE_DECL_PROGRAM_INVOCATION_SHORT_NAME 1
+-#endif
++// #endif
+ 
+ /* If defined or set by the user program to a non-zero value, then a default
+    option --version is added (unless the ARGP_NO_HELP flag is used), which
+-- 
+2.25.1
+
