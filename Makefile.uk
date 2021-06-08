@@ -86,6 +86,8 @@ LIBARGP_SRCS-y += $(LIBARGP_SRC)/basename-lgpl.c
 LIBARGP_SRCS-y += $(LIBARGP_SRC)/dirname-lgpl.c
 LIBARGP_SRCS-y += $(LIBARGP_SRC)/getopt.c
 LIBARGP_SRCS-y += $(LIBARGP_SRC)/getopt1.c
+LIBARGP_SRCS-y += $(LIBARGP_BASE)/version-etc-fsf.c
+LIBARGP_SRCS-y += $(LIBARGP_BASE)/version-etc.c
 
 LIBARGP_SRCS-y += $(LIBARGP_SRC)/argp-ba.c
 LIBARGP_SRCS-y += $(LIBARGP_SRC)/argp-eexst.c
@@ -96,4 +98,5 @@ LIBARGP_SRCS-y += $(LIBARGP_SRC)/argp-parse.c
 LIBARGP_SRCS-y += $(LIBARGP_SRC)/argp-pin.c
 LIBARGP_SRCS-y += $(LIBARGP_SRC)/argp-pv.c
 LIBARGP_SRCS-y += $(LIBARGP_SRC)/argp-pvh.c
+LIBARGP_SRCS-y += $(LIBARGP_BASE)/argp-version-etc.c
 LIBARGP_SRCS-y += $(LIBARGP_SRC)/argp-xinl.c
