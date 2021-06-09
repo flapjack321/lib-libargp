@@ -55,14 +55,14 @@ LIBARGP_SRC = $(LIBARGP_ORIGIN)/$(LIBARGP_SUBDIR)/gnulib/gllib
 ################################################################################
 # Library includes
 ################################################################################
+LIBARGP_CINCLUDES += -I$(LIBARGP_BASE)/include-internal
+# CINCLUDES-y += -I$(LIBARGP_BASE)/include
 CINCLUDES-y += -I$(LIBARGP_BASE)/include
-CINCLUDES-y += -I$(LIBARGP_EXTRACTED)/include
 
 ################################################################################
 # Flags
 ################################################################################
 LIBARGP_FLAGS = -D _LIBC
-
 
 # Suppress some warnings to make the build process look neater
 LIBARGP_FLAGS_SUPPRESS = -Wunused-parameter -Wcomment -Wunused-parameter
