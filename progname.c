@@ -14,7 +14,7 @@
 #include <config.h>
 /* Specification.  */
 #undef ENABLE_RELOCATABLE /* avoid defining set_program_name as a macro */
-#include "progname.h"
+#include <progname.h>
 #include <errno.h> /* get program_invocation_name declaration */
 #include <stdio.h>
 #include <stdlib.h>
