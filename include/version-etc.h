@@ -65,12 +65,15 @@ extern void version_etc_va (FILE *stream,
                             const char *version, va_list authors);
 
 /* Names are passed as separate arguments, with an additional
-   NULL argument at the end.  */
+   NULL argument at the end.
+
+   For some reason using _GL_ATTRIBUTE_SENTINEL doesn't work
+   here. */
 extern void version_etc (FILE *stream,
                          const char *command_name, const char *package,
                          const char *version,
                          /* const char *author1, ..., NULL */ ...)
-  _GL_ATTRIBUTE_SENTINEL;
+  __attribute__ ((__sentinel__));
 
 /* Display the usual "Report bugs to" stanza.  */
 extern void emit_bug_reporting_address (void);
